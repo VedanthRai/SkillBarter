@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Analytics — SkillBarter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<main class="page-main">
+<div class="container">
+    <div th:replace="~{layout :: flashes}"></div>
+
+    <div class="page-hdr">
+        <h1>📊 My Analytics</h1>
+        <a th:href="@{/dashboard}" class="btn btn-ghost btn-sm">← Dashboard</a>
+    </div>
+
+    <!-- Summary stats -->
+    <div class="stats-grid" style="margin-bottom:32px;">
+        <div class="stat-card stat-card--sessions">
+            <div class="stat-icon">🎓</div>
+            <div class="stat-body">
+                <div class="stat-val" th:text="${#lists.size(taughtSessions)}">0</div>
+                <div class="stat-label">Sessions Taught</div>
+            </div>
+        </div>
+        <div class="stat-card stat-card--credits">
+            <div class="stat-icon">📚</div>
+            <div class="stat-body">
+                <div class="stat-val" th:text="${#lists.size(learnedSessions)}">0</div>
+                <div class="stat-label">Sessions Learned</div>
+            </div>
+        </div>
+        <div class="stat-card stat-card--rep">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-body">
+                <div class="stat-val" th:text="${#numbers.formatDecimal(avgRating,1,2)}">0.00</div>
+                <div class="stat-label">Avg Rating as Teacher</div>
+            </div>
+        </div>
+        <div class="stat-card stat-card--streak">
+            <div class="stat-icon">💰</div>
+            <div class="stat-body">
+                <div class="stat-val" th:text="${#numbers.formatDecimal(totalEarned,1,2)}">0.00</div>
+                <div class="stat-label">Credits Earned</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-body">
+                <div class="stat-val" th:text="${totalMinutesTaught / 60} + 'h ' + ${totalMinutesTaught % 60} + 'm'">0h</div>
+                <div class="stat-label">Hours Taught</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🧠</div>
+            <div class="stat-body">
+                <div class="stat-val" th:text="${totalMinutesLearned / 60} + 'h ' + ${totalMinutesLearned % 60} + 'm'">0h</div>
+                <div class="stat-label">Hours Learned</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-two-col">
+        <!-- Earnings by skill -->
+        <div class="dash-section">
+            <h2 class="section-title">💰 Earnings by Skill</h2>
+            <div th:if="${earningsBySkill.isEmpty()}" class="empty-state">
+                No earnings yet. Start teaching to see data here.
+            </div>
+            <div th:each="entry : ${earningsBySkill}" class="analytics-bar-row">
+                <div class="analytics-bar-label" th:text="${entry.key}">Skill</div>
+                <div class="analytics-bar-track">
+                    <div class="analytics-bar-fill" style="width:100%;"></div>
+                </div>
+                <div class="analytics-bar-val"
+                     th:text="${#numbers.formatDecimal(entry.value,1,2)} + ' cr'">0</div>
+            </div>
+        </div>
+
+        <!-- Sessions by skill -->
+        <div class="dash-section">
+            <h2 class="section-title">📚 Sessions by Skill</h2>
+            <div th:if="${sessionsBySkill.isEmpty()}" class="empty-state">
+                No sessions yet.
+            </div>
+            <div th:each="entry : ${sessionsBySkill}" class="analytics-bar-row">
+                <div class="analytics-bar-label" th:text="${entry.key}">Skill</div>
+                <div class="analytics-bar-track">
+                    <div class="analytics-bar-fill analytics-bar-fill--blue" style="width:100%;"></div>
+                </div>
+                <div class="analytics-bar-val" th:text="${entry.value} + ' sessions'">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My skills performance -->
+    <div class="dash-section">
+        <h2 class="section-title">🎯 My Skills Performance</h2>
+        <div th:if="${#lists.isEmpty(mySkills)}" class="empty-state">
+            No skills added yet. <a th:href="@{/skills/my}">Add a skill →</a>
+        </div>
+        <div th:if="${!#lists.isEmpty(mySkills)}" class="sessions-table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Category</th>
+                        <th>Rate</th>
+                        <th>Sessions</th>
+                        <th>Avg Rating</th>
+                        <th>Endorsements</th>
+                        <th>Verified</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="s : ${mySkills}" th:if="${s.isOffering}">
+                        <td>
+                            <a th:href="@{/skills/{id}(id=${s.id})}"
+                               th:text="${s.name}" style="font-weight:600;">skill</a>
+                        </td>
+                        <td>
+                            <span class="skill-cat-tag"
+                                  th:text="${s.category.name().replace('_',' ')}">CAT</span>
+                        </td>
+                        <td th:text="${#numbers.formatDecimal(s.hourlyRate,1,1)} + ' cr/hr'">1.0</td>
+                        <td th:text="${s.totalSessions}">0</td>
+                        <td>
+                            <span th:if="${s.totalRatings > 0}"
+                                  th:text="${#numbers.formatDecimal(s.averageRating,1,1)} + ' ★'">0.0</span>
+                            <span th:if="${s.totalRatings == 0}" style="color:var(--text-dim);">No ratings</span>
+                        </td>
+                        <td th:text="${s.endorsementCount}">0</td>
+                        <td>
+                            <span th:if="${s.verified}" class="verified-badge">✅ Yes</span>
+                            <span th:if="${!s.verified and s.certificatePath != null}"
+                                  class="status-badge status-requested">Pending</span>
+                            <span th:if="${!s.verified and s.certificatePath == null}"
+                                  style="color:var(--text-dim);font-size:12px;">No cert</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent reviews -->
+    <div class="dash-section">
+        <h2 class="section-title">💬 Recent Reviews Received</h2>
+        <div th:if="${#lists.isEmpty(reviews)}" class="empty-state">No reviews yet.</div>
+        <div th:each="r : ${reviews}" class="review-mini" style="padding:14px 0;border-bottom:1px solid var(--border);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <div>
+                    <span th:each="i : ${#numbers.sequence(1,5)}"
+                          th:classappend="${i <= r.rating} ? 'star-on' : 'star-off'"
+                          style="font-size:16px;">★</span>
+                    <strong style="margin-left:8px;" th:text="${r.rating} + '/5'">5/5</strong>
+                </div>
+                <span style="font-size:12px;color:var(--text-dim);"
+                      th:text="${#temporals.format(r.createdAt,'dd MMM yyyy')}">date</span>
+            </div>
+            <p th:text="${r.comment}" style="font-size:13px;color:var(--text-muted);">comment</p>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">
+                by <strong th:text="${r.reviewer.username}">user</strong>
+                for <em th:text="${r.session.skill.name}">skill</em>
+            </div>
+        </div>
+    </div>
+
+</div>
+</main>
+<div th:replace="~{layout :: footer}"></div>
+
+<style>
+.analytics-bar-row {
+  display:flex; align-items:center; gap:12px;
+  padding:8px 0; border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.analytics-bar-row:last-child { border-bottom:none; }
+.analytics-bar-label { width:140px; flex-shrink:0; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.analytics-bar-track { flex:1; height:8px; background:var(--surface2); border-radius:4px; overflow:hidden; }
+.analytics-bar-fill { height:100%; background:var(--accent); border-radius:4px; }
+.analytics-bar-fill--blue { background:var(--primary); }
+.analytics-bar-val { width:80px; text-align:right; color:var(--text-muted); flex-shrink:0; }
+.star-on { color:var(--accent); }
+.star-off { color:var(--border-lt); }
+</style>
+</body>
+</html>

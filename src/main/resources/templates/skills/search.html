@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Find Teachers - SkillBarter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<main class="page-main">
+<div class="container">
+    <div th:replace="~{layout :: flashes}"></div>
+
+    <div class="browse-hero" style="padding-top:24px;">
+        <h1 th:text="${isDiscoveryMode} ? 'Find Teachers' : 'Find Teachers for &quot;' + query + '&quot;'">Find Teachers</h1>
+        <form th:action="@{/skills/search}" method="get" class="search-form">
+            <input type="text" name="q" th:value="${query}"
+                   placeholder="Search skills, e.g. Python, Guitar, Spanish" class="search-input"/>
+            <select name="strategy" class="search-select">
+                <option th:each="entry : ${strategies}"
+                        th:value="${entry.key}"
+                        th:text="${entry.value.strategyName}"
+                        th:selected="${entry.key == strategy}">Strategy</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+
+    <div style="margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span style="font-size:14px;color:var(--text-muted);"
+              th:text="${isDiscoveryMode} ? 'Showing recommended teachers across all available skills.' : 'Showing teachers for: &quot;' + query + '&quot;'">
+            Showing recommended teachers across all available skills.
+        </span>
+        <span class="badge-chip"
+              th:each="entry : ${strategies}"
+              th:if="${entry.key == strategy}"
+              th:text="${entry.value.strategyName}">Top-Rated Teachers</span>
+        <span style="font-size:13px;color:var(--text-muted);"
+              th:text="${#lists.size(matches)} + ' teacher match(es)'">0 teacher matches</span>
+    </div>
+
+    <div th:if="${#lists.isEmpty(matches)}" class="empty-state large">
+        <div class="empty-icon">🔍</div>
+        <h3>No matches found</h3>
+        <p th:text="${isDiscoveryMode} ? 'No teachers are available right now. Try again later.' : 'Try a different keyword or switch matching strategy.'">
+            Try a different keyword or switch matching strategy.
+        </p>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+            <a th:href="@{/skills/search}" class="btn btn-primary">See All Teachers</a>
+            <a th:href="@{/skills/search(q=${query},strategy='ratingBasedStrategy')}" class="btn btn-ghost">Try Top Rated</a>
+        </div>
+    </div>
+
+    <div class="skills-grid" th:unless="${#lists.isEmpty(matches)}">
+        <div th:each="skill, stat : ${matches}" class="skill-card" style="position:relative;">
+            <div style="position:absolute;top:12px;right:12px;width:26px;height:26px;
+                        border-radius:50%;background:var(--primary);color:#fff;
+                        display:flex;align-items:center;justify-content:center;
+                        font-size:11px;font-weight:700;"
+                 th:text="${stat.index + 1}">1</div>
+
+            <div class="skill-card-header">
+                <span class="skill-cat-tag"
+                      th:text="${skill.category.name().replace('_',' ')}">CAT</span>
+                <span th:if="${skill.verified}" class="verified-badge">Verified</span>
+            </div>
+
+            <h3 class="skill-name" th:text="${skill.name}">Skill Name</h3>
+            <p class="skill-desc"
+               th:text="${skill.description != null ? skill.description : 'No description provided.'}">desc</p>
+
+            <div class="skill-meta">
+                <div class="skill-teacher">
+                    <div class="teacher-avatar"
+                         th:text="${skill.user.username.substring(0,1).toUpperCase()}">U</div>
+                    <div>
+                        <a th:href="@{/profile/{id}(id=${skill.user.id})}"
+                           class="teacher-name" th:text="${skill.user.username}">user</a>
+                        <div style="font-size:11px;color:var(--text-dim);"
+                             th:text="${skill.totalSessions} + ' sessions taught'">0 sessions taught</div>
+                    </div>
+                </div>
+                <div class="skill-rating">
+                    <span class="stars-mini">
+                        <span th:each="i : ${#numbers.sequence(1,5)}"
+                              th:classappend="${i <= skill.averageRating} ? 'star-on' : 'star-off'">★</span>
+                    </span>
+                    <span class="rating-num"
+                          th:text="${#numbers.formatDecimal(skill.averageRating,1,1)}">0.0</span>
+                </div>
+            </div>
+
+            <div th:if="${skill.proficiencyLevel != null}"
+                 style="font-size:12px;color:var(--text-muted);margin-bottom:8px;"
+                 th:text="'Level: ' + ${skill.proficiencyLevel}">level</div>
+
+            <div class="skill-footer">
+                <div class="skill-rate">
+                    <span class="rate-num"
+                          th:text="${#numbers.formatDecimal(skill.hourlyRate,1,1)}">1.0</span>
+                    <span class="rate-label">cr/hr</span>
+                </div>
+                <div sec:authorize="isAuthenticated()">
+                    <a th:href="@{/sessions/request/{id}(id=${skill.id})}"
+                       class="btn btn-primary btn-sm">Book</a>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/auth/login}" class="btn btn-ghost btn-sm">Login to Book</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(matches)}"
+         style="margin-top:32px;padding:20px;background:var(--surface);
+                border:1px solid var(--border);border-radius:var(--radius-lg);">
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">
+            Try a different matching strategy for different teacher recommendations:
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <a th:href="@{/skills/search(q=${query},strategy='ratingBasedStrategy')}"
+               class="btn btn-ghost btn-sm"
+               th:classappend="${strategy == 'ratingBasedStrategy'} ? 'btn-primary' : ''">
+                Top Rated
+            </a>
+            <a th:href="@{/skills/search(q=${query},strategy='affordabilityStrategy')}"
+               class="btn btn-ghost btn-sm"
+               th:classappend="${strategy == 'affordabilityStrategy'} ? 'btn-primary' : ''">
+                Most Affordable
+            </a>
+            <a th:href="@{/skills/search(q=${query},strategy='verifiedOnlyStrategy')}"
+               class="btn btn-ghost btn-sm"
+               th:classappend="${strategy == 'verifiedOnlyStrategy'} ? 'btn-primary' : ''">
+                Verified Only
+            </a>
+        </div>
+    </div>
+</div>
+</main>
+<div th:replace="~{layout :: footer}"></div>
+<div th:replace="~{layout :: skillbot-fab}"></div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

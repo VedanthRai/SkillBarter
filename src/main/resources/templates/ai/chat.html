@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SkillBot AI — SkillBarter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+
+<main class="page-main">
+<div class="container container--narrow">
+
+    <div class="page-hdr">
+        <div>
+            <h1>🤖 SkillBot</h1>
+            <p style="color:var(--text-muted);margin-top:4px;">
+                Your AI assistant — powered by Google Gemini
+            </p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="quickAsk('How does the credit escrow system work?')">💰 Escrow?</button>
+            <button class="btn btn-ghost btn-sm" onclick="quickAsk('What skills are most in demand on a skill exchange platform?')">🔥 Trending skills</button>
+            <button class="btn btn-ghost btn-sm" onclick="quickAsk('How do I write a great skill description to attract learners?')">✍️ Write bio</button>
+        </div>
+    </div>
+
+    <!-- Chat window -->
+    <div class="chat-window" id="chatWindow">
+        <!-- Welcome message -->
+        <div class="chat-bubble chat-bubble--bot">
+            <div class="bubble-avatar">🤖</div>
+            <div class="bubble-body">
+                <div class="bubble-text">
+                    Hey there! I'm <strong>SkillBot</strong>, your AI assistant on SkillBarter. 👋<br><br>
+                    I can help you:
+                    <ul style="margin:8px 0 0 16px;line-height:1.8;">
+                        <li>Find the right skills to learn or teach</li>
+                        <li>Understand how credits &amp; escrow work</li>
+                        <li>Write better skill descriptions or bios</li>
+                        <li>Draft messages to teachers or learners</li>
+                        <li>Answer any platform questions</li>
+                    </ul>
+                    <br>What can I help you with today?
+                </div>
+                <div class="bubble-time">SkillBot · just now</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill suggestion panel -->
+    <div class="ai-panel" id="suggestPanel" style="display:none;">
+        <h3 style="font-size:14px;margin-bottom:12px;color:var(--text-muted);">💡 SKILL SUGGESTIONS</h3>
+        <div id="suggestResult" style="white-space:pre-wrap;font-size:14px;line-height:1.7;"></div>
+    </div>
+
+    <!-- Input area -->
+    <div class="chat-input-area">
+        <div class="chat-input-row">
+            <textarea id="chatInput" class="chat-textarea" rows="2"
+                      placeholder="Ask SkillBot anything about skills, credits, sessions..."
+                      onkeydown="handleKey(event)"></textarea>
+            <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">
+                <span id="sendLabel">Send</span>
+                <span id="sendSpinner" style="display:none;">⏳</span>
+            </button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <span style="font-size:12px;color:var(--text-dim);">Quick actions:</span>
+            <button class="btn btn-ghost btn-xs" onclick="openSuggestPanel()">🎯 Suggest skills for me</button>
+            <button class="btn btn-ghost btn-xs" onclick="quickAsk('How do I raise a dispute?')">⚖️ Disputes</button>
+            <button class="btn btn-ghost btn-xs" onclick="quickAsk('How do I earn more credits quickly?')">💰 Earn credits</button>
+            <button class="btn btn-ghost btn-xs" onclick="quickAsk('What badges can I earn on SkillBarter?')">🏅 Badges</button>
+        </div>
+    </div>
+
+    <!-- Skill suggestion modal -->
+    <div class="modal-overlay" id="suggestModal" style="display:none;" onclick="closeSuggestModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <h2 style="margin-bottom:16px;">🎯 Get Skill Suggestions</h2>
+            <div class="form-group">
+                <label>What are your interests or hobbies?</label>
+                <input type="text" id="interestsInput" class="search-input"
+                       placeholder="e.g. music, coding, cooking, fitness..."/>
+            </div>
+            <div class="form-group">
+                <label>What skills do you already have? (optional)</label>
+                <input type="text" id="currentSkillsInput" class="search-input"
+                       placeholder="e.g. Python, guitar basics..."/>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px;">
+                <button class="btn btn-primary" onclick="getSuggestions()">Get Suggestions</button>
+                <button class="btn btn-ghost" onclick="closeSuggestModal()">Cancel</button>
+            </div>
+            <div id="suggestLoading" style="display:none;margin-top:12px;color:var(--text-muted);font-size:14px;">
+                ⏳ Thinking...
+            </div>
+            <div id="suggestOutput" style="display:none;margin-top:16px;white-space:pre-wrap;
+                 font-size:14px;line-height:1.8;background:var(--surface2);
+                 border-radius:var(--radius);padding:16px;"></div>
+        </div>
+    </div>
+
+</div>
+</main>
+
+<div th:replace="~{layout :: footer}"></div>
+
+<style>
+.chat-window {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  min-height: 400px;
+  max-height: 560px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+  scroll-behavior: smooth;
+}
+.chat-bubble {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  animation: fadeIn 0.2s ease;
+}
+.chat-bubble--user { flex-direction: row-reverse; }
+.bubble-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.chat-bubble--user .bubble-avatar {
+  background: var(--primary);
+  font-size: 14px; font-weight: 700; color: #fff;
+}
+.bubble-body { max-width: 80%; }
+.bubble-text {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.chat-bubble--user .bubble-text {
+  background: rgba(99,102,241,0.15);
+  border-color: rgba(99,102,241,0.3);
+}
+.bubble-time {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  padding: 0 4px;
+}
+.chat-bubble--user .bubble-time { text-align: right; }
+.chat-input-area {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+}
+.chat-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.chat-textarea {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border-lt);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.chat-textarea:focus { border-color: var(--primary); }
+.ai-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+}
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  width: 100%; max-width: 520px;
+  max-height: 80vh; overflow-y: auto;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+.typing-indicator { display:flex; gap:4px; padding:8px 0; }
+.typing-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--text-dim);
+  animation: bounce 1.2s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay:0.2s; }
+.typing-dot:nth-child(3) { animation-delay:0.4s; }
+@keyframes bounce {
+  0%,80%,100% { transform:translateY(0); }
+  40% { transform:translateY(-6px); }
+}
+</style>
+
+<script th:inline="javascript">
+const userInitial = /*[[${user.username.substring(0,1).toUpperCase()}]]*/ 'U';
+
+function getTime() {
+    return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function appendBubble(text, isUser) {
+    const window = document.getElementById('chatWindow');
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ' + (isUser ? 'chat-bubble--user' : 'chat-bubble--bot');
+
+    const avatar = document.createElement('div');
+    avatar.className = 'bubble-avatar';
+    avatar.textContent = isUser ? userInitial : '🤖';
+
+    const body = document.createElement('div');
+    body.className = 'bubble-body';
+
+    const textDiv = document.createElement('div');
+    textDiv.className = 'bubble-text';
+    // Convert markdown-style **bold** and newlines
+    textDiv.innerHTML = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+
+    const timeDiv = document.createElement('div');
+    timeDiv.className = 'bubble-time';
+    timeDiv.textContent = (isUser ? 'You' : 'SkillBot') + ' · ' + getTime();
+
+    body.appendChild(textDiv);
+    body.appendChild(timeDiv);
+    bubble.appendChild(avatar);
+    bubble.appendChild(body);
+    window.appendChild(bubble);
+    window.scrollTop = window.scrollHeight;
+    return bubble;
+}
+
+function showTyping() {
+    const window = document.getElementById('chatWindow');
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble chat-bubble--bot';
+    bubble.id = 'typingBubble';
+    bubble.innerHTML = `
+        <div class="bubble-avatar">🤖</div>
+        <div class="bubble-body">
+            <div class="bubble-text">
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>`;
+    window.appendChild(bubble);
+    window.scrollTop = window.scrollHeight;
+}
+
+function removeTyping() {
+    const t = document.getElementById('typingBubble');
+    if (t) t.remove();
+}
+
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    input.value = '';
+    appendBubble(message, true);
+    showTyping();
+
+    document.getElementById('sendBtn').disabled = true;
+    document.getElementById('sendLabel').style.display = 'none';
+    document.getElementById('sendSpinner').style.display = 'inline';
+
+    try {
+        const res = await fetch('/ai/chat/ask', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json',
+                      'X-CSRF-TOKEN': getCsrfToken()},
+            body: JSON.stringify({message})
+        });
+        const data = await res.json();
+        removeTyping();
+        appendBubble(data.reply || 'No response.', false);
+    } catch (e) {
+        removeTyping();
+        appendBubble('Connection error. Please try again.', false);
+    } finally {
+        document.getElementById('sendBtn').disabled = false;
+        document.getElementById('sendLabel').style.display = 'inline';
+        document.getElementById('sendSpinner').style.display = 'none';
+    }
+}
+
+function quickAsk(msg) {
+    document.getElementById('chatInput').value = msg;
+    sendMessage();
+}
+
+function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+}
+
+function openSuggestPanel() {
+    document.getElementById('suggestModal').style.display = 'flex';
+}
+
+function closeSuggestModal(e) {
+    if (!e || e.target === document.getElementById('suggestModal')) {
+        document.getElementById('suggestModal').style.display = 'none';
+        document.getElementById('suggestOutput').style.display = 'none';
+        document.getElementById('suggestOutput').textContent = '';
+    }
+}
+
+async function getSuggestions() {
+    const interests = document.getElementById('interestsInput').value.trim();
+    if (!interests) { alert('Please enter your interests.'); return; }
+    const currentSkills = document.getElementById('currentSkillsInput').value.trim();
+
+    document.getElementById('suggestLoading').style.display = 'block';
+    document.getElementById('suggestOutput').style.display = 'none';
+
+    try {
+        const res = await fetch('/ai/suggest-skills', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json',
+                      'X-CSRF-TOKEN': getCsrfToken()},
+            body: JSON.stringify({interests, currentSkills})
+        });
+        const data = await res.json();
+        document.getElementById('suggestOutput').textContent = data.suggestions || 'No suggestions.';
+        document.getElementById('suggestOutput').style.display = 'block';
+    } catch (e) {
+        document.getElementById('suggestOutput').textContent = 'Error fetching suggestions.';
+        document.getElementById('suggestOutput').style.display = 'block';
+    } finally {
+        document.getElementById('suggestLoading').style.display = 'none';
+    }
+}
+
+function getCsrfToken() {
+    const meta = document.querySelector('meta[name="_csrf"]');
+    return meta ? meta.getAttribute('content') : '';
+}
+</script>
+</body>
+</html>

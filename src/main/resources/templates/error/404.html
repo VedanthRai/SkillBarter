@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Error — SkillBarter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<main style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+    <div style="text-align:center;max-width:480px;padding:40px;">
+        <div style="font-size:64px;margin-bottom:16px;">⚠️</div>
+        <h1 style="font-family:var(--font-display);font-size:32px;margin-bottom:12px;"
+            th:text="${errorTitle}">Error</h1>
+        <p style="color:var(--text-muted);margin-bottom:28px;"
+           th:text="${errorMessage}">Something went wrong.</p>
+        <a href="/dashboard" class="btn btn-primary">← Go to Dashboard</a>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,517 @@
+/' ================================================================
+   SkillBarter — UML Diagrams (PlantUML)
+   UE23CS352B OOAD Project
+   ================================================================ '/
+
+/' ────────────────────────────────────────────────────────────────
+   1. USE CASE DIAGRAM
+   ──────────────────────────────────────────────────────────────── '/
+@startuml UseCaseDiagram
+left to right direction
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #1a2235
+  BorderColor #6366f1
+  FontColor #f0f4ff
+  ArrowColor #6366f1
+}
+
+actor "Guest"         as Guest
+actor "User"          as User
+actor "Verifier"      as Verifier
+actor "Admin"         as Admin
+
+rectangle "SkillBarter System" {
+
+  usecase "Register / Login"           as UC1
+  usecase "Browse Skills"              as UC2
+  usecase "Add / Edit Skill"           as UC3
+  usecase "Upload Certificate"         as UC4
+  usecase "Search with Smart Match"    as UC5
+  usecase "Request Session"            as UC6
+  usecase "Accept / Reject Session"    as UC7
+  usecase "Start Session"              as UC8
+  usecase "Confirm Completion"         as UC9
+  usecase "View Escrow Balance"        as UC10
+  usecase "Submit Review"              as UC11
+  usecase "Raise Dispute"              as UC12
+  usecase "View Notifications"         as UC13
+  usecase "Download PDF Receipt"       as UC14
+  usecase "View Leaderboard"           as UC15
+  usecase "Verify Skill Certificate"   as UC16
+  usecase "Assign Verifier to Dispute" as UC17
+  usecase "Resolve Dispute"            as UC18
+  usecase "Manage Users (Ban/Suspend)" as UC19
+  usecase "Admin Dashboard"            as UC20
+}
+
+Guest --> UC1
+Guest --> UC2
+
+User  --> UC1
+User  --> UC3
+User  --> UC4
+User  --> UC5
+User  --> UC6
+User  --> UC7
+User  --> UC8
+User  --> UC9
+User  --> UC10
+User  --> UC11
+User  --> UC12
+User  --> UC13
+User  --> UC14
+User  --> UC15
+
+Verifier --> UC16
+Verifier --> UC17
+Verifier --> UC18
+
+Admin --> UC19
+Admin --> UC20
+Admin --> UC16
+Admin --> UC17
+
+@enduml
+
+
+/' ────────────────────────────────────────────────────────────────
+   2. CLASS DIAGRAM
+   ──────────────────────────────────────────────────────────────── '/
+@startuml ClassDiagram
+skinparam classBackgroundColor #111827
+skinparam classBorderColor #6366f1
+skinparam classArrowColor #818cf8
+skinparam classFontColor #f0f4ff
+skinparam stereotypeFontColor #818cf8
+
+enum UserStatus { PENDING_VERIFICATION / ACTIVE / SUSPENDED / BANNED }
+enum TransactionStatus { PENDING / ESCROWED / RELEASED / REFUNDED / DISPUTED }
+enum SessionStatus { REQUESTED / ACCEPTED / IN_PROGRESS / COMPLETED / CANCELLED / DISPUTED }
+enum DisputeStatus { OPEN / UNDER_REVIEW / RESOLVED_TEACHER / RESOLVED_LEARNER / CLOSED }
+enum SkillCategory { TECHNOLOGY / LANGUAGES / MUSIC / ARTS_AND_CRAFTS / ACADEMICS / ... }
+enum Role { ROLE_USER / ROLE_VERIFIER / ROLE_ADMIN }
+
+class User {
+  -id: Long
+  -username: String
+  -email: String
+  -passwordHash: String
+  -bio: String
+  -creditBalance: BigDecimal
+  -escrowBalance: BigDecimal
+  -streakCount: int
+  -totalSessionsCompleted: int
+  -reputationScore: int
+  -status: UserStatus
+  -role: Role
+  +hasEnoughCredits(amount): boolean
+  +deductCredits(amount): void
+  +addCredits(amount): void
+  +refundFromEscrow(amount): void
+  +incrementStreak(): void
+  +isActive(): boolean
+}
+
+class Skill {
+  -id: Long
+  -name: String
+  -description: String
+  -category: SkillCategory
+  -hourlyRate: BigDecimal
+  -proficiencyLevel: String
+  -certificatePath: String
+  -verified: boolean
+  -isOffering: boolean
+  -averageRating: double
+  -totalRatings: int
+  +updateRating(rating): void
+}
+
+class Session {
+  -id: Long
+  -scheduledAt: LocalDateTime
+  -durationMinutes: int
+  -status: SessionStatus
+  -creditAmount: BigDecimal
+  -learnerConfirmed: boolean
+  -teacherConfirmed: boolean
+  -receiptPath: String
+  +isBothConfirmed(): boolean
+  +computeCreditAmount(): BigDecimal
+}
+
+class Transaction {
+  -id: Long
+  -amount: BigDecimal
+  -status: TransactionStatus
+  -note: String
+  -escrowedAt: LocalDateTime
+  -resolvedAt: LocalDateTime
+  +canEscrow(): boolean
+  +canRelease(): boolean
+  +canRefund(): boolean
+  +transitionTo(status): void
+}
+
+class Review {
+  -id: Long
+  -rating: int
+  -comment: String
+}
+
+class Dispute {
+  -id: Long
+  -description: String
+  -evidence: String
+  -status: DisputeStatus
+  -resolution: String
+  -assignedAt: LocalDateTime
+  -resolvedAt: LocalDateTime
+}
+
+class Badge {
+  -id: Long
+  -badgeName: String
+  -badgeType: String
+  -description: String
+}
+
+class Notification {
+  -id: Long
+  -type: NotificationType
+  -message: String
+  -actionUrl: String
+  -isRead: boolean
+}
+
+' Relationships
+User "1" *-- "many" Skill        : offers/wants
+User "1" *-- "many" Badge        : earns
+User "1" *-- "many" Notification : receives
+User "1" -- "many" Session       : learns (as learner)
+User "1" -- "many" Session       : teaches (as teacher)
+
+Session "1" *-- "1"  Transaction  : has
+Session "1" *-- "0..1" Review     : has
+Session "1" *-- "0..1" Dispute    : has
+Session "many" -- "1" Skill       : for
+
+Review   -- User : reviewer
+Review   -- User : reviewed
+Dispute  -- User : raisedBy
+Dispute  -- User : assignedVerifier
+Transaction -- User : payer
+Transaction -- User : payee
+Badge    -- Skill  : for skill (optional)
+
+' Pattern notes
+note top of User       : Decorated by UserProfileDecorator\n(Decorator Pattern)
+note top of Session    : Lifecycle fires ApplicationEvents\n(Observer Pattern)
+note top of Transaction: State transitions via transitionTo()\n(State Pattern)
+note right of Skill    : Consumed by MatchingStrategy\n(Strategy Pattern)
+
+@enduml
+
+
+/' ────────────────────────────────────────────────────────────────
+   3. STATE DIAGRAM 1 — Transaction (Escrow)
+   ──────────────────────────────────────────────────────────────── '/
+@startuml StateDiagram_Transaction
+skinparam state {
+  BackgroundColor #1a2235
+  BorderColor #6366f1
+  FontColor #f0f4ff
+  ArrowColor #818cf8
+}
+title Transaction State Machine (Escrow)
+
+[*] --> PENDING : Session requested\nCredits deducted from learner
+
+PENDING   --> ESCROWED  : createAndEscrow()\n[learner has sufficient credits]
+ESCROWED  --> RELEASED  : release()\n[both parties confirmed]
+ESCROWED  --> REFUNDED  : refund()\n[session cancelled]
+ESCROWED  --> DISPUTED  : markDisputed()\n[dispute raised]
+DISPUTED  --> RELEASED  : resolveInFavourOfTeacher()\n[verifier ruling]
+DISPUTED  --> REFUNDED  : resolveInFavourOfLearner()\n[verifier ruling]
+RELEASED  --> [*]       : Credits in teacher wallet
+REFUNDED  --> [*]       : Credits returned to learner
+
+@enduml
+
+
+/' ────────────────────────────────────────────────────────────────
+   4. STATE DIAGRAM 2 — Session Lifecycle
+   ──────────────────────────────────────────────────────────────── '/
+@startuml StateDiagram_Session
+skinparam state {
+  BackgroundColor #1a2235
+  BorderColor #10b981
+  FontColor #f0f4ff
+  ArrowColor #6ee7b7
+}
+title Session State Machine
+
+[*]          --> REQUESTED   : requestSession()\n[credits escrowed]
+REQUESTED    --> ACCEPTED    : acceptSession() by teacher
+REQUESTED    --> CANCELLED   : cancelSession() by either party
+ACCEPTED     --> IN_PROGRESS : startSession() by teacher
+ACCEPTED     --> CANCELLED   : cancelSession() by either party
+IN_PROGRESS  --> COMPLETED   : confirmCompletion()\n[both confirmed]
+IN_PROGRESS  --> DISPUTED    : raiseDispute()
+COMPLETED    --> [*]         : Receipt generated\nCredits released
+CANCELLED    --> [*]         : Credits refunded
+DISPUTED     --> COMPLETED   : resolveInFavourOfTeacher()
+DISPUTED     --> CANCELLED   : resolveInFavourOfLearner()
+
+@enduml
+
+
+/' ────────────────────────────────────────────────────────────────
+   5. STATE DIAGRAM 3 — User Account
+   ──────────────────────────────────────────────────────────────── '/
+@startuml StateDiagram_User
+skinparam state {
+  BackgroundColor #1a2235
+  BorderColor #f59e0b
+  FontColor #f0f4ff
+  ArrowColor #fcd34d
+}
+title User Account State Machine
+
+[*] --> PENDING_VERIFICATION : register()
+
+PENDING_VERIFICATION --> ACTIVE    : emailVerified = true\n(auto on signup in current build)
+ACTIVE               --> SUSPENDED : admin.suspendUser()
+ACTIVE               --> BANNED    : admin.banUser()
+SUSPENDED            --> ACTIVE    : admin.reinstateUser()
+SUSPENDED            --> BANNED    : admin.banUser()
+BANNED               --> ACTIVE    : admin.reinstateUser()\n[admin discretion]
+BANNED               --> [*]       : Account permanently closed
+
+note right of ACTIVE : Can login, book sessions,\nearn/spend credits
+note right of SUSPENDED : Login blocked,\nexisting escrow frozen
+note right of BANNED : All access revoked
+
+@enduml
+
+
+/' ────────────────────────────────────────────────────────────────
+   6. STATE DIAGRAM 4 — Dispute Tribunal
+   ──────────────────────────────────────────────────────────────── '/
+@startuml StateDiagram_Dispute
+skinparam state {
+  BackgroundColor #1a2235
+  BorderColor #ef4444
+  FontColor #f0f4ff
+  ArrowColor #fca5a5
+}
+title Dispute State Machine (Tribunal)
+
+[*]           --> OPEN           : raiseDispute()\n[session participant]
+
+OPEN          --> UNDER_REVIEW   : assignVerifier()\n[admin assigns ROLE_VERIFIER]
+OPEN          --> CLOSED         : withdraw() [optional]
+
+UNDER_REVIEW  --> RESOLVED_TEACHER : resolveInFavourOfTeacher()\n[verifier ruling]
+UNDER_REVIEW  --> RESOLVED_LEARNER : resolveInFavourOfLearner()\n[verifier ruling]
+
+RESOLVED_TEACHER --> CLOSED : Acknowledged
+RESOLVED_LEARNER --> CLOSED : Acknowledged
+CLOSED           --> [*]    : Case archived
+
+note right of RESOLVED_TEACHER : Credits released to teacher\nSession status → COMPLETED
+note right of RESOLVED_LEARNER : Credits refunded to learner\nSession status → CANCELLED
+
+@enduml
+
+
+/' ────────────────────────────────────────────────────────────────
+   7. ACTIVITY DIAGRAM 1 — Login Flow
+   ──────────────────────────────────────────────────────────────── '/
+@startuml ActivityDiagram_Login
+skinparam activity {
+  BackgroundColor #1a2235
+  BorderColor #6366f1
+  FontColor #f0f4ff
+  ArrowColor #818cf8
+}
+title Activity Diagram — User Login
+
+start
+:User submits login form\n(email + password);
+:AuthController receives POST /auth/login;
+:CustomUserDetailsService.loadUserByUsername();
+if (User found?) then (yes)
+  if (Password matches?) then (yes)
+    if (Account ACTIVE?) then (yes)
+      :Create Spring Security session;
+      :Redirect to /dashboard;
+      :DashboardController loads stats\n(sessions, credits, notifications);
+      :Render dashboard/home.html;
+    else (BANNED / SUSPENDED)
+      :Show account disabled error;
+    endif
+  else (no)
+    :Increment failed attempt counter;
+    :Redirect to /auth/login?error=true;
+  endif
+else (no)
+  :Redirect to /auth/login?error=true;
+endif
+stop
+
+@enduml
+
+
+/' ────────────────────────────────────────────────────────────────
+   8. ACTIVITY DIAGRAM 2 — Book Session
+   ──────────────────────────────────────────────────────────────── '/
+@startuml ActivityDiagram_BookSession
+skinparam activity {
+  BackgroundColor #1a2235
+  BorderColor #10b981
+  FontColor #f0f4ff
+  ArrowColor #6ee7b7
+}
+title Activity Diagram — Book a Session
+
+start
+:Learner browses /skills/browse;
+:Learner selects strategy\n(Rating / Affordable / Verified);
+:MatchingService.findMatches() invoked;
+:Ranked skill list returned;
+:Learner selects skill → clicks "Book →";
+:Learner fills session request form\n(date, duration, notes);
+:SessionController.requestSession() called;
+
+fork
+  :Validate form inputs;
+  :Check session in future;
+fork again
+  :Check learner balance ≥ creditAmount;
+end fork
+
+if (All validations pass?) then (yes)
+  :SessionService.requestSession();
+  :TransactionService.createAndEscrow();
+  :Credits deducted from learner;
+  :Credits moved to escrow;
+  :Session status → REQUESTED;
+  :Fire SessionRequestedEvent;
+  :NotificationService sends notification to teacher;
+  :Redirect to /sessions/{id};
+else (no)
+  :Show validation error;
+  :Stay on request form;
+endif
+stop
+
+@enduml
+
+
+/' ────────────────────────────────────────────────────────────────
+   9. ACTIVITY DIAGRAM 3 — Complete Transaction (Escrow Release)
+   ──────────────────────────────────────────────────────────────── '/
+@startuml ActivityDiagram_CompleteTransaction
+skinparam activity {
+  BackgroundColor #1a2235
+  BorderColor #f59e0b
+  FontColor #f0f4ff
+  ArrowColor #fcd34d
+}
+title Activity Diagram — Complete Transaction (Escrow Release)
+
+start
+:Session is IN_PROGRESS;
+
+fork
+  :Learner clicks "Confirm Completion";
+  :learnerConfirmed = true;
+fork again
+  :Teacher clicks "Confirm Completion";
+  :teacherConfirmed = true;
+end fork
+
+if (isBothConfirmed()?) then (yes)
+  :Session status → COMPLETED;
+  :TransactionService.release();
+  :learner.releaseEscrow(amount);
+  :teacher.addCredits(amount);
+  :Transaction status → RELEASED;
+
+  fork
+    :Update Skill.averageRating;
+  fork again
+    :teacher.incrementStreak();
+    :learner.incrementStreak();
+    :teacher.reputationScore += 2;
+  fork again
+    :checkAndAwardStreakBadge(teacher);
+    :checkAndAwardStreakBadge(learner);
+  fork again
+    :PdfReceiptService.generateReceipt();
+    :session.receiptPath = filename;
+  end fork
+
+  :Fire SessionCompletedEvent;
+  :NotificationService notifies both parties;
+  :Prompt learner to leave review;
+else (waiting)
+  :Show "Waiting for other party";
+endif
+stop
+
+@enduml
+
+
+/' ────────────────────────────────────────────────────────────────
+   10. ACTIVITY DIAGRAM 4 — Resolve Dispute
+   ──────────────────────────────────────────────────────────────── '/
+@startuml ActivityDiagram_ResolveDispute
+skinparam activity {
+  BackgroundColor #1a2235
+  BorderColor #ef4444
+  FontColor #f0f4ff
+  ArrowColor #fca5a5
+}
+title Activity Diagram — Dispute Resolution
+
+start
+:Session participant raises dispute;
+:DisputeService.raiseDispute();
+:Session status → DISPUTED;
+:Transaction status → DISPUTED;
+:Dispute created with status OPEN;
+:Fire DisputeOpenedEvent;
+:Notifications sent to both parties;
+
+:Admin views /admin/disputes;
+:Admin selects available ROLE_VERIFIER;
+:DisputeService.assignVerifier();
+:Dispute status → UNDER_REVIEW;
+:Verifier notified;
+
+:Verifier reviews evidence at /disputes/{id};
+:Verifier writes resolution text;
+
+if (Ruling?) then (Teacher wins)
+  :DisputeService.resolveInFavourOfTeacher();
+  :TransactionService.release();
+  :Credits released to teacher;
+  :Session status → COMPLETED;
+  :Dispute status → RESOLVED_TEACHER;
+else (Learner wins)
+  :DisputeService.resolveInFavourOfLearner();
+  :TransactionService.refund();
+  :Credits refunded to learner;
+  :Session status → CANCELLED;
+  :Dispute status → RESOLVED_LEARNER;
+endif
+
+:Fire DisputeResolvedEvent;
+:Both parties notified of outcome;
+:Dispute status → CLOSED;
+stop
+
+@enduml
