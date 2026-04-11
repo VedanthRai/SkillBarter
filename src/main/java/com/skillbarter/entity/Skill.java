@@ -57,6 +57,12 @@ public class Skill {
     @Builder.Default
     private Boolean verified = false;
 
+    /** Verification level: UNVERIFIED, BASIC, ADVANCED, EXPERT */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private com.skillbarter.enums.VerificationLevel verificationLevel = com.skillbarter.enums.VerificationLevel.UNVERIFIED;
+
     @Column(nullable = false)
     @Builder.Default
     private Boolean isOffering = true; // true = teaching this skill, false = wanting to learn

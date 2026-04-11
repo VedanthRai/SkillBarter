@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Send Gift — SkillBarter</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<main class="page-main">
+    <div class="container">
+        <h1>Send Credit Gift 🎁</h1>
+        <form th:action="@{/gifts/send}" th:object="${giftDto}" method="post">
+            <div class="form-group">
+                <label>Recipient User ID</label>
+                <input type="number" th:field="*{recipientId}" class="form-control" required/>
+            </div>
+            <div class="form-group">
+                <label>Amount (Credits)</label>
+                <input type="number" step="0.01" th:field="*{amount}" class="form-control" required/>
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea th:field="*{message}" class="form-control"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Gift</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

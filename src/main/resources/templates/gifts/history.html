@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Gift History — SkillBarter</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<main class="page-main">
+    <div class="container">
+        <h1>Gift History</h1>
+        <div th:each="gift : ${gifts}" class="card">
+            <p><strong>From:</strong> <span th:text="${gift.sender.username}"></span></p>
+            <p><strong>To:</strong> <span th:text="${gift.recipient.username}"></span></p>
+            <p><strong>Amount:</strong> <span th:text="${gift.amount}"></span> credits</p>
+            <p><strong>Message:</strong> <span th:text="${gift.message}"></span></p>
+        </div>
+    </div>
+</main>
+</body>
+</html>

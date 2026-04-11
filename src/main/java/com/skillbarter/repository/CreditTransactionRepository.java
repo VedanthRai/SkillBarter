@@ -25,4 +25,18 @@ public interface CreditTransactionRepository extends JpaRepository<CreditTransac
 
     @Query("SELECT COALESCE(SUM(ct.amount), 0) FROM CreditTransaction ct WHERE ct.type = 'ADMIN_GRANT'")
     BigDecimal sumAdminGrants();
+
+    /** Analytics: Credits earned by day */
+    @Query("SELECT DATE(ct.createdAt) as date, SUM(ct.amount) as total " +
+           "FROM CreditTransaction ct " +
+           "WHERE ct.createdAt >= :startDate AND ct.amount > 0 " +
+           "GROUP BY DATE(ct.createdAt) ORDER BY DATE(ct.createdAt)")
+    List<Object[]> getCreditEarnedByDay(@Param("startDate") java.time.LocalDateTime startDate);
+
+    /** Analytics: Credits spent by day */
+    @Query("SELECT DATE(ct.createdAt) as date, SUM(ABS(ct.amount)) as total " +
+           "FROM CreditTransaction ct " +
+           "WHERE ct.createdAt >= :startDate AND ct.amount < 0 " +
+           "GROUP BY DATE(ct.createdAt) ORDER BY DATE(ct.createdAt)")
+    List<Object[]> getCreditSpentByDay(@Param("startDate") java.time.LocalDateTime startDate);
 }

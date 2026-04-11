@@ -143,6 +143,25 @@ public class DisputeService {
         return dispute;
     }
 
+    @Transactional
+    public Dispute resolveWithPartialRefund(Long disputeId, Long verifierId, String resolution) {
+        Dispute dispute = getAndValidateVerifier(disputeId, verifierId);
+
+        dispute.setStatus(DisputeStatus.RESOLVED_LEARNER);
+        dispute.setResolution(resolution + " [50/50 SPLIT]");
+        dispute.setResolvedAt(LocalDateTime.now());
+        dispute = disputeRepository.save(dispute);
+
+        // Split 50/50
+        transactionService.partialRefund(dispute.getSession());
+        dispute.getSession().setStatus(SessionStatus.COMPLETED);
+        sessionRepository.save(dispute.getSession());
+
+        eventPublisher.publishEvent(new DomainEvents.DisputeResolvedEvent(this, dispute));
+        log.info("Dispute {} resolved with 50/50 split by verifier {}", disputeId, verifierId);
+        return dispute;
+    }
+
     // ── Queries ──────────────────────────────────────────────────────────
 
     public Dispute getDispute(Long id) {

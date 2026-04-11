@@ -1,12 +1,17 @@
 package com.skillbarter.config;
 
 import com.skillbarter.dto.SessionRequestDto;
+import com.skillbarter.entity.Notification;
+import com.skillbarter.entity.ReferralCode;
 import com.skillbarter.entity.Session;
 import com.skillbarter.entity.Skill;
 import com.skillbarter.entity.User;
+import com.skillbarter.enums.NotificationType;
 import com.skillbarter.enums.Role;
 import com.skillbarter.enums.SkillCategory;
 import com.skillbarter.enums.UserStatus;
+import com.skillbarter.repository.NotificationRepository;
+import com.skillbarter.repository.ReferralCodeRepository;
 import com.skillbarter.repository.SessionRepository;
 import com.skillbarter.repository.SkillRepository;
 import com.skillbarter.repository.UserRepository;
@@ -30,6 +35,8 @@ public class DataInitializer implements ApplicationRunner {
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
     private final SessionRepository sessionRepository;
+    private final ReferralCodeRepository referralCodeRepository;
+    private final NotificationRepository notificationRepository;
     private final PasswordEncoder passwordEncoder;
     private final SessionService sessionService;
 
@@ -139,6 +146,12 @@ public class DataInitializer implements ApplicationRunner {
                         "Absolutely. I will prepare a travel phrase sheet for us."
                 });
 
+        // ── Demo Referral Codes ──────────────────────────────────────────
+        ensureDemoReferralCodes(alice, bob, charlie);
+
+        // ── Demo Notifications ───────────────────────────────────────────
+        ensureDemoNotifications(alice, bob, charlie);
+
         log.info("DataInitializer: demo users, skills, and sessions are ready.");
         log.info("Admin    -> admin@skillbarter.app / Admin@1234");
         log.info("Verifier -> verifier@skillbarter.app / Verify@1234");
@@ -245,5 +258,111 @@ public class DataInitializer implements ApplicationRunner {
 
     private int defaultInt(Integer value) {
         return value == null ? 0 : value;
+    }
+
+    private void ensureDemoReferralCodes(User alice, User bob, User charlie) {
+        // Create referral codes for demo users
+        if (referralCodeRepository.findByReferrerId(alice.getId()).isEmpty()) {
+            ReferralCode aliceCode = ReferralCode.builder()
+                    .referrer(alice)
+                    .code("ALICE123")
+                    .usedCount(2)
+                    .build();
+            referralCodeRepository.save(aliceCode);
+        }
+
+        if (referralCodeRepository.findByReferrerId(bob.getId()).isEmpty()) {
+            ReferralCode bobCode = ReferralCode.builder()
+                    .referrer(bob)
+                    .code("MUSIC456")
+                    .usedCount(1)
+                    .build();
+            referralCodeRepository.save(bobCode);
+        }
+
+        if (referralCodeRepository.findByReferrerId(charlie.getId()).isEmpty()) {
+            ReferralCode charlieCode = ReferralCode.builder()
+                    .referrer(charlie)
+                    .code("LANG789")
+                    .usedCount(3)
+                    .build();
+            referralCodeRepository.save(charlieCode);
+        }
+    }
+
+    private void ensureDemoNotifications(User alice, User bob, User charlie) {
+        // Check if notifications already exist to avoid duplicates
+        if (notificationRepository.findByRecipientIdOrderByCreatedAtDesc(alice.getId()).isEmpty()) {
+            // Notifications for Alice
+            notificationRepository.save(Notification.builder()
+                    .recipient(alice)
+                    .type(NotificationType.SESSION_REQUEST)
+                    .message("Bob requested a session for Python Programming")
+                    .actionUrl("/sessions/1")
+                    .isRead(false)
+                    .build());
+
+            notificationRepository.save(Notification.builder()
+                    .recipient(alice)
+                    .type(NotificationType.PAYMENT_RELEASED)
+                    .message("Session completed! 2.50 credits released to your balance.")
+                    .actionUrl("/wallet")
+                    .isRead(false)
+                    .build());
+
+            notificationRepository.save(Notification.builder()
+                    .recipient(alice)
+                    .type(NotificationType.ENDORSEMENT_RECEIVED)
+                    .message("Charlie endorsed your Python Programming skill!")
+                    .actionUrl("/skills/1")
+                    .isRead(true)
+                    .build());
+        }
+
+        if (notificationRepository.findByRecipientIdOrderByCreatedAtDesc(bob.getId()).isEmpty()) {
+            // Notifications for Bob
+            notificationRepository.save(Notification.builder()
+                    .recipient(bob)
+                    .type(NotificationType.SESSION_ACCEPTED)
+                    .message("Alice accepted your session request for Classical Guitar")
+                    .actionUrl("/sessions/2")
+                    .isRead(false)
+                    .build());
+
+            notificationRepository.save(Notification.builder()
+                    .recipient(bob)
+                    .type(NotificationType.PAYMENT_RELEASED)
+                    .message("You received 1.0 credits from referral bonus")
+                    .actionUrl("/wallet")
+                    .isRead(true)
+                    .build());
+        }
+
+        if (notificationRepository.findByRecipientIdOrderByCreatedAtDesc(charlie.getId()).isEmpty()) {
+            // Notifications for Charlie
+            notificationRepository.save(Notification.builder()
+                    .recipient(charlie)
+                    .type(NotificationType.SESSION_REQUEST)
+                    .message("Alice requested a Spanish Conversation session")
+                    .actionUrl("/sessions/3")
+                    .isRead(false)
+                    .build());
+
+            notificationRepository.save(Notification.builder()
+                    .recipient(charlie)
+                    .type(NotificationType.WISHLIST_ALERT)
+                    .message("Your French for Beginners skill has been verified!")
+                    .actionUrl("/skills/5")
+                    .isRead(false)
+                    .build());
+
+            notificationRepository.save(Notification.builder()
+                    .recipient(charlie)
+                    .type(NotificationType.BADGE_AWARDED)
+                    .message("Congratulations! You earned the 'Language Expert' badge")
+                    .actionUrl("/profile")
+                    .isRead(true)
+                    .build());
+        }
     }
 }

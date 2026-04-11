@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Referrals — SkillBarter</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<main class="page-main">
+    <div class="container">
+        <h1>Referral Program</h1>
+        <div class="card">
+            <h2>Your Referral Code</h2>
+            <p class="referral-code" th:text="${referralCode.code}">CODE123</p>
+            <p>Share this code with friends! When they sign up and complete their first session, you both get 1 bonus credit.</p>
+        </div>
+        <div class="card">
+            <h2>Referral Stats</h2>
+            <p><strong>Total Referrals:</strong> <span th:text="${referrals.size()}">0</span></p>
+            <div th:each="ref : ${referrals}">
+                <p><span th:text="${ref.username}"></span> joined via your code</p>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

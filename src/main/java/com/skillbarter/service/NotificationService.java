@@ -200,6 +200,11 @@ public class NotificationService {
     }
 
     @Transactional
+    public void markAllAsRead(Long userId) {
+        markAllRead(userId); // Alias for consistency
+    }
+
+    @Transactional
     public void markRead(Long notificationId) {
         notificationRepository.findById(notificationId).ifPresent(n -> {
             n.setIsRead(true);
@@ -213,5 +218,73 @@ public class NotificationService {
         notificationRepository.save(notification);
         log.debug("Notification sent to {}: {}", notification.getRecipient().getUsername(),
                   notification.getMessage());
+    }
+
+    // ── Credit Expiry Notifications ───────────────────────────────────────
+
+    @Transactional
+    public void notifyCreditExpiry(User user, java.math.BigDecimal expiredAmount) {
+        send(NotificationBuilder.create()
+                .forUser(user)
+                .ofType(NotificationType.ADMIN_MESSAGE)
+                .withMessage(String.format("Your %.2f credits have expired due to 6 months of inactivity. " +
+                             "Stay active to keep your credits!", expiredAmount.doubleValue()))
+                .withActionUrl("/wallet")
+                .build());
+    }
+
+    @Transactional
+    public void notifyUpcomingCreditExpiry(User user, int daysRemaining) {
+        send(NotificationBuilder.create()
+                .forUser(user)
+                .ofType(NotificationType.ADMIN_MESSAGE)
+                .withMessage(String.format("⚠️ Your credits will expire in %d days due to inactivity. " +
+                             "Book a session to keep them active!", daysRemaining))
+                .withActionUrl("/dashboard")
+                .build());
+    }
+
+    @Transactional
+    public void notifyGiftReceived(User recipient, User sender, java.math.BigDecimal amount, String message) {
+        send(NotificationBuilder.create()
+                .forUser(recipient)
+                .ofType(NotificationType.PAYMENT_RELEASED)
+                .withMessage(String.format("🎁 %s sent you %.2f credits! Message: %s",
+                             sender.getUsername(), amount.doubleValue(), message))
+                .withActionUrl("/wallet")
+                .build());
+    }
+
+    @Transactional
+    public void notifySkillSwapProposal(User recipient, User proposer, String mySkill, String desiredSkill) {
+        send(NotificationBuilder.create()
+                .forUser(recipient)
+                .ofType(NotificationType.SESSION_REQUEST)
+                .withMessage(String.format("%s proposed a skill swap: they teach %s, you teach %s",
+                             proposer.getUsername(), mySkill, desiredSkill))
+                .withActionUrl("/skill-swaps")
+                .build());
+    }
+
+    @Transactional
+    public void notifySkillRequestOffer(User requester, User teacher, String skillName) {
+        send(NotificationBuilder.create()
+                .forUser(requester)
+                .ofType(NotificationType.SESSION_REQUEST)
+                .withMessage(String.format("%s offered to teach you %s!",
+                             teacher.getUsername(), skillName))
+                .withActionUrl("/skill-requests/my-requests")
+                .build());
+    }
+
+    @Transactional
+    public void notifyReferralBonus(User referrer, User newUser) {
+        send(NotificationBuilder.create()
+                .forUser(referrer)
+                .ofType(NotificationType.BADGE_AWARDED)
+                .withMessage(String.format("🎉 %s joined using your referral code! You both earned 1 bonus credit.",
+                             newUser.getUsername()))
+                .withActionUrl("/referrals")
+                .build());
     }
 }

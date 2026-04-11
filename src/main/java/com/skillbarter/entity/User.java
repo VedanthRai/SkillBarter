@@ -58,6 +58,15 @@ public class User {
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
 
+    @Column(length = 255)
+    private String profilePicture; // Alias for profile picture path/URL
+
+    @Column(length = 255)
+    private String location; // User's location/city
+
+    @Column
+    private Double averageRating; // Average rating from reviews
+
     // ── Time Credits ────────────────────────────────────────
     @Column(nullable = false, precision = 10, scale = 2, columnDefinition = "DECIMAL(10,2) DEFAULT 0.00")
     @Builder.Default
@@ -82,6 +91,10 @@ public class User {
 
     @Column
     private LocalDateTime lastSessionDate;
+
+    @Column
+    @Builder.Default
+    private LocalDateTime lastActiveAt = LocalDateTime.now();
 
     // ── Preferences ─────────────────────────────────────────
     /** IANA timezone ID, e.g. "Asia/Kolkata", "America/New_York" */

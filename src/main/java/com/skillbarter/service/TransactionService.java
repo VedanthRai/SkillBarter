@@ -130,6 +130,42 @@ public class TransactionService {
     }
 
     /**
+     * Partial refund (50/50 split) for dispute resolution.
+     */
+    @Transactional
+    public Transaction partialRefund(Session session) {
+        Transaction tx = getTransactionForSession(session.getId());
+
+        if (tx.getStatus() == TransactionStatus.RELEASED) {
+            throw new BusinessRuleException("Credits already released — cannot refund.");
+        }
+
+        BigDecimal halfAmount = tx.getAmount().divide(BigDecimal.valueOf(2));
+
+        User learner = session.getLearner();
+        User teacher = session.getTeacher();
+
+        // Return half to learner, give half to teacher
+        learner.releaseEscrow(halfAmount);
+        learner.addCredits(halfAmount);
+        
+        learner.releaseEscrow(halfAmount);
+        teacher.addCredits(halfAmount);
+
+        userRepository.save(learner);
+        userRepository.save(teacher);
+
+        tx.transitionTo(TransactionStatus.RELEASED);
+        tx.setNote(tx.getNote() + " [50/50 SPLIT]");
+        tx = transactionRepository.save(tx);
+
+        walletService.recordPartialRefund(learner, teacher, session, halfAmount);
+        log.info("Partial refund (50/50): {} to learner, {} to teacher for session {}",
+                halfAmount, halfAmount, session.getId());
+        return tx;
+    }
+
+    /**
      * Mark transaction as disputed (called when dispute is raised).
      */
     @Transactional

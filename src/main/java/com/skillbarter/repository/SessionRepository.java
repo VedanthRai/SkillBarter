@@ -49,4 +49,32 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     /** Count completed sessions for a user as learner */
     @Query("SELECT COUNT(s) FROM Session s WHERE s.learner.id = :userId AND s.status = 'COMPLETED'")
     long countCompletedAsLearner(@Param("userId") Long userId);
+
+    /** Find sessions scheduled between two times with specific status (for reminders) */
+    @Query("SELECT s FROM Session s WHERE s.scheduledAt BETWEEN :start AND :end AND s.status = :status")
+    List<Session> findSessionsScheduledBetween(
+        @Param("start") LocalDateTime start, 
+        @Param("end") LocalDateTime end,
+        @Param("status") SessionStatus status
+    );
+
+    /** Analytics: Sessions by category */
+    @Query("SELECT s.skill.category, COUNT(s) FROM Session s GROUP BY s.skill.category")
+    List<Object[]> countSessionsByCategory();
+
+    /** Analytics: Sessions by hour of day */
+    @Query("SELECT HOUR(s.scheduledAt), COUNT(s) FROM Session s " +
+           "WHERE s.scheduledAt IS NOT NULL GROUP BY HOUR(s.scheduledAt)")
+    List<Object[]> getSessionsByHourOfDay();
+
+    /** Analytics: Completion rate by day */
+    @Query("SELECT DATE(s.completedAt) as date, " +
+           "(COUNT(CASE WHEN s.status = 'COMPLETED' THEN 1 END) * 100.0 / COUNT(*)) as rate " +
+           "FROM Session s WHERE s.completedAt >= :startDate " +
+           "GROUP BY DATE(s.completedAt) ORDER BY DATE(s.completedAt)")
+    List<Object[]> getCompletionRateByDay(@Param("startDate") java.time.LocalDateTime startDate);
+
+    /** Analytics: Count reviews by user */
+    @Query("SELECT COUNT(s) FROM Session s WHERE s.review IS NOT NULL AND s.learner.id = :userId")
+    long countReviewsByUser(@Param("userId") Long userId);
 }

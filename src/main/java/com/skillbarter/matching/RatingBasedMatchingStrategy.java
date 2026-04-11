@@ -21,12 +21,11 @@ public class RatingBasedMatchingStrategy implements MatchingStrategy {
     public List<Skill> match(User learner, String wantedSkill, List<Skill> allOffered) {
         String keyword = wantedSkill.toLowerCase().trim();
         return allOffered.stream()
-                // exclude learner's own skills
-                .filter(s -> !s.getUser().getId().equals(learner.getId()))
                 // only active teachers
                 .filter(s -> s.getUser().isActive())
-                // name must contain the wanted keyword
-                .filter(s -> s.getName().toLowerCase().contains(keyword))
+                // name or description must contain the wanted keyword
+                .filter(s -> s.getName().toLowerCase().contains(keyword) || 
+                           s.getDescription().toLowerCase().contains(keyword))
                 // sort by average rating descending, then total sessions descending
                 .sorted(Comparator
                         .comparingDouble(Skill::getAverageRating).reversed()

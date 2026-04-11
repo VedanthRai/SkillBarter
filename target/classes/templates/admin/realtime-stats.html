@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Real-Time Statistics — SkillBarter</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" th:href="@{/css/dark-mode.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+
+<main class="page-main">
+    <div class="container">
+        <div class="page-hdr">
+            <h1>📊 Real-Time Platform Statistics</h1>
+            <button onclick="refreshStats()" class="btn btn-primary">🔄 Refresh</button>
+        </div>
+
+        <!-- Platform Health -->
+        <div class="health-section">
+            <h2>🏥 Platform Health</h2>
+            <div class="health-grid">
+                <div class="health-card">
+                    <span class="health-label">Completion Rate</span>
+                    <span class="health-value" th:text="${healthMetrics.completionRate}">Good</span>
+                </div>
+                <div class="health-card">
+                    <span class="health-label">User Engagement</span>
+                    <span class="health-value" th:text="${healthMetrics.userEngagement}">High</span>
+                </div>
+                <div class="health-card">
+                    <span class="health-label">Verification Rate</span>
+                    <span class="health-value" th:text="${healthMetrics.verificationRate}">Good</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Platform Statistics -->
+        <div class="stats-section">
+            <h2>📈 Platform Overview</h2>
+            <div class="stats-grid-large">
+                <div class="stat-card-large">
+                    <div class="stat-icon-large">👥</div>
+                    <div class="stat-content">
+                        <div class="stat-value-large" th:text="${platformStats.totalUsers}">0</div>
+                        <div class="stat-label-large">Total Users</div>
+                        <div class="stat-sublabel" th:text="${platformStats.activeUsers} + ' active'">0 active</div>
+                    </div>
+                </div>
+
+                <div class="stat-card-large">
+                    <div class="stat-icon-large">📚</div>
+                    <div class="stat-content">
+                        <div class="stat-value-large" th:text="${platformStats.totalSessions}">0</div>
+                        <div class="stat-label-large">Total Sessions</div>
+                        <div class="stat-sublabel" th:text="${platformStats.completedSessions} + ' completed'">0 completed</div>
+                    </div>
+                </div>
+
+                <div class="stat-card-large">
+                    <div class="stat-icon-large">🎓</div>
+                    <div class="stat-content">
+                        <div class="stat-value-large" th:text="${platformStats.totalSkills}">0</div>
+                        <div class="stat-label-large">Total Skills</div>
+                        <div class="stat-sublabel" th:text="${platformStats.offeredSkills} + ' offered'">0 offered</div>
+                    </div>
+                </div>
+
+                <div class="stat-card-large">
+                    <div class="stat-icon-large">💰</div>
+                    <div class="stat-content">
+                        <div class="stat-value-large" th:text="${#numbers.formatDecimal(platformStats.totalCreditsInCirculation, 1, 0)}">0</div>
+                        <div class="stat-label-large">Credits in Circulation</div>
+                        <div class="stat-sublabel" th:text="${#numbers.formatDecimal(platformStats.totalCreditsInEscrow, 1, 0)} + ' in escrow'">0 in escrow</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Activity -->
+        <div class="activity-section">
+            <h2>⚡ Live Activity</h2>
+            <div class="activity-grid">
+                <div class="activity-card">
+                    <div class="activity-icon">🟢</div>
+                    <div class="activity-content">
+                        <div class="activity-value" th:text="${platformStats.activeSessions}">0</div>
+                        <div class="activity-label">Sessions In Progress</div>
+                    </div>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-icon">⏳</div>
+                    <div class="activity-content">
+                        <div class="activity-value" th:text="${platformStats.pendingSessions}">0</div>
+                        <div class="activity-label">Pending Requests</div>
+                    </div>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-icon">👤</div>
+                    <div class="activity-content">
+                        <div class="activity-value" th:text="${activityStats.activeToday}">0</div>
+                        <div class="activity-label">Active Today</div>
+                    </div>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-icon">📅</div>
+                    <div class="activity-content">
+                        <div class="activity-value" th:text="${activityStats.activeThisWeek}">0</div>
+                        <div class="activity-label">Active This Week</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trending -->
+        <div class="trending-section" th:if="${trendingStats.topCategory != null}">
+            <h2>🔥 Trending Now</h2>
+            <div class="trending-grid">
+                <div class="trending-card">
+                    <div class="trending-icon">📊</div>
+                    <div class="trending-content">
+                        <div class="trending-label">Most Popular Category</div>
+                        <div class="trending-value" th:text="${trendingStats.topCategory}">Category</div>
+                        <div class="trending-count" th:text="${trendingStats.topCategoryCount} + ' sessions'">0 sessions</div>
+                    </div>
+                </div>
+
+                <div class="trending-card" th:if="${trendingStats.peakHour != null}">
+                    <div class="trending-icon">⏰</div>
+                    <div class="trending-content">
+                        <div class="trending-label">Peak Usage Hour</div>
+                        <div class="trending-value" th:text="${trendingStats.peakHour}">12:00</div>
+                        <div class="trending-count" th:text="${trendingStats.peakHourSessions} + ' sessions'">0 sessions</div>
+                    </div>
+                </div>
+
+                <div class="trending-card">
+                    <div class="trending-icon">✅</div>
+                    <div class="trending-content">
+                        <div class="trending-label">Completion Rate</div>
+                        <div class="trending-value" th:text="${platformStats.completionRate}">0%</div>
+                        <div class="trending-count">Overall platform</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+function refreshStats() {
+    location.reload();
+}
+
+// Auto-refresh every 30 seconds
+setInterval(refreshStats, 30000);
+</script>
+
+<style>
+.health-section, .stats-section, .activity-section, .trending-section {
+    margin-bottom: 40px;
+}
+
+.health-section h2, .stats-section h2, .activity-section h2, .trending-section h2 {
+    margin-bottom: 20px;
+}
+
+.health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.health-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.health-label {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.health-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: rgb(72, 187, 120);
+}
+
+.stats-grid-large {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.stat-card-large {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    box-shadow: 0 2px 8px var(--shadow);
+    transition: transform 0.2s;
+}
+
+.stat-card-large:hover {
+    transform: translateY(-4px);
+}
+
+.stat-icon-large {
+    font-size: 3rem;
+    flex-shrink: 0;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-value-large {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.stat-label-large {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.stat-sublabel {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+}
+
+.activity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.activity-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.activity-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.activity-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.activity-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.trending-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.trending-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.trending-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.trending-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.trending-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+}
+
+.trending-count {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+}
+
+@media (max-width: 768px) {
+    .stats-grid-large, .activity-grid, .trending-grid, .health-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+</body>
+</html>

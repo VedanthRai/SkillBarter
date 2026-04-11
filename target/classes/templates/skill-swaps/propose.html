@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Propose Skill Swap — SkillBarter</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<main class="page-main">
+    <div class="container">
+        <h1>Propose Skill Swap</h1>
+        <form th:action="@{/skill-swaps/propose}" th:object="${swapDto}" method="post">
+            <div class="form-group">
+                <label>Your Skill ID</label>
+                <input type="number" th:field="*{mySkillId}" class="form-control" required/>
+            </div>
+            <div class="form-group">
+                <label>Desired Skill ID</label>
+                <input type="number" th:field="*{desiredSkillId}" class="form-control" required/>
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea th:field="*{message}" class="form-control"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Propose Swap</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

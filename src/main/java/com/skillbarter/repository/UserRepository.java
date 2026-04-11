@@ -39,4 +39,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /** Streak leaderboard */
     @Query("SELECT u FROM User u WHERE u.status = 'ACTIVE' ORDER BY u.streakCount DESC")
     List<User> findTopByStreakCount();
+
+    /** Find users inactive since a given date (for credit expiry) */
+    @Query("SELECT u FROM User u WHERE u.lastActiveAt < :threshold AND u.status = 'ACTIVE'")
+    List<User> findUsersInactiveSince(@Param("threshold") java.time.LocalDateTime threshold);
+
+    /** Analytics: User growth by day */
+    @Query("SELECT DATE(u.createdAt) as date, COUNT(u) as count " +
+           "FROM User u WHERE u.createdAt >= :startDate " +
+           "GROUP BY DATE(u.createdAt) ORDER BY DATE(u.createdAt)")
+    List<Object[]> getUserGrowthByDay(@Param("startDate") java.time.LocalDateTime startDate);
+
+
+    long countByStatus(UserStatus status);
 }

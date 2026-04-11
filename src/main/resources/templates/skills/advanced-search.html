@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Advanced Search — SkillBarter</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" th:href="@{/css/dark-mode.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+
+<main class="page-main">
+    <div class="container">
+        <h1>🔍 Advanced Skill Search</h1>
+
+        <!-- Search Form -->
+        <form th:action="@{/skills/advanced-search}" th:object="${searchDto}" method="post" class="advanced-search-form">
+            
+            <!-- Text Search with Autocomplete -->
+            <div class="form-group">
+                <label>Search Skills</label>
+                <input type="text" 
+                       th:field="*{query}" 
+                       class="form-control" 
+                       placeholder="e.g., Python, Guitar, Cooking..."
+                       id="searchInput"
+                       autocomplete="off"/>
+                <div id="autocomplete-results" class="autocomplete-dropdown"></div>
+            </div>
+
+            <!-- Filters Row 1 -->
+            <div class="filter-row">
+                <div class="form-group">
+                    <label>Category</label>
+                    <select th:field="*{category}" class="form-control">
+                        <option value="">All Categories</option>
+                        <option th:each="cat : ${categories}" 
+                                th:value="${cat}" 
+                                th:text="${cat}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Verification Level</label>
+                    <select th:field="*{verificationLevel}" class="form-control">
+                        <option value="">Any Level</option>
+                        <option th:each="level : ${verificationLevels}" 
+                                th:value="${level}" 
+                                th:text="${level}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Sort By</label>
+                    <select th:field="*{sortBy}" class="form-control">
+                        <option value="rating">Highest Rated</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                        <option value="newest">Newest First</option>
+                        <option value="popular">Most Popular</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Filters Row 2 -->
+            <div class="filter-row">
+                <div class="form-group">
+                    <label>Min Price (Credits/Hour)</label>
+                    <input type="number" 
+                           th:field="*{minPrice}" 
+                           class="form-control" 
+                           placeholder="0"
+                           step="0.5"
+                           min="0"/>
+                </div>
+
+                <div class="form-group">
+                    <label>Max Price (Credits/Hour)</label>
+                    <input type="number" 
+                           th:field="*{maxPrice}" 
+                           class="form-control" 
+                           placeholder="100"
+                           step="0.5"
+                           min="0"/>
+                </div>
+
+                <div class="form-group">
+                    <label>Minimum Rating</label>
+                    <select th:field="*{minRating}" class="form-control">
+                        <option value="">Any Rating</option>
+                        <option value="4.5">4.5+ ⭐⭐⭐⭐⭐</option>
+                        <option value="4.0">4.0+ ⭐⭐⭐⭐</option>
+                        <option value="3.5">3.5+ ⭐⭐⭐</option>
+                        <option value="3.0">3.0+ ⭐⭐</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Checkboxes -->
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" th:field="*{availableOnly}"/>
+                    Show only available teachers
+                </label>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">🔍 Search</button>
+                <a th:href="@{/skills/advanced-search}" class="btn btn-ghost">Clear Filters</a>
+            </div>
+        </form>
+
+        <!-- Popular Searches -->
+        <div class="popular-searches" th:if="${popularSearches != null && !popularSearches.isEmpty()}">
+            <h3>Popular Searches:</h3>
+            <div class="tag-list">
+                <a th:each="search : ${popularSearches}" 
+                   th:href="@{/skills/advanced-search(query=${search})}"
+                   class="tag">
+                    <span th:text="${search}"></span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <div th:if="${results != null}" class="search-results">
+            <div class="results-header">
+                <h2>Search Results</h2>
+                <p class="result-count">
+                    Found <strong th:text="${resultCount}">0</strong> skills
+                </p>
+            </div>
+
+            <div th:if="${results.isEmpty()}" class="empty-state">
+                <p>😔 No skills found matching your criteria.</p>
+                <p>Try adjusting your filters or search terms.</p>
+            </div>
+
+            <div class="skill-grid">
+                <div th:each="skill : ${results}" class="skill-card">
+                    <div class="skill-header">
+                        <h3 th:text="${skill.name}">Skill Name</h3>
+                        <span class="skill-category" th:text="${skill.category}">Category</span>
+                    </div>
+                    
+                    <p class="skill-description" th:text="${skill.description}">Description</p>
+                    
+                    <div class="skill-meta">
+                        <span class="skill-teacher">
+                            👤 <span th:text="${skill.user.username}">Teacher</span>
+                        </span>
+                        <span class="skill-rating" th:if="${skill.averageRating != null}">
+                            ⭐ <span th:text="${#numbers.formatDecimal(skill.averageRating, 1, 1)}">0.0</span>
+                        </span>
+                        <span class="skill-price">
+                            💰 <span th:text="${skill.hourlyRate}">0</span> credits/hr
+                        </span>
+                    </div>
+                    
+                    <div class="skill-badges">
+                        <span th:if="${skill.verified}" class="badge badge-verified">✓ Verified</span>
+                        <span th:if="${skill.verificationLevel != null}" 
+                              class="badge badge-level"
+                              th:text="${skill.verificationLevel}">Level</span>
+                        <span th:if="${skill.endorsementCount > 0}" 
+                              class="badge badge-endorsed">
+                            👍 <span th:text="${skill.endorsementCount}">0</span> endorsements
+                        </span>
+                    </div>
+                    
+                    <a th:href="@{/skills/{id}(id=${skill.id})}" class="btn btn-primary btn-full">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+// Autocomplete functionality
+const searchInput = document.getElementById('searchInput');
+const autocompleteResults = document.getElementById('autocomplete-results');
+
+let debounceTimer;
+searchInput.addEventListener('input', function() {
+    clearTimeout(debounceTimer);
+    const query = this.value;
+    
+    if (query.length < 2) {
+        autocompleteResults.innerHTML = '';
+        autocompleteResults.style.display = 'none';
+        return;
+    }
+    
+    debounceTimer = setTimeout(() => {
+        fetch(`/skills/autocomplete?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(suggestions => {
+                if (suggestions.length === 0) {
+                    autocompleteResults.style.display = 'none';
+                    return;
+                }
+                
+                autocompleteResults.innerHTML = suggestions
+                    .map(s => `<div class="autocomplete-item">${s}</div>`)
+                    .join('');
+                autocompleteResults.style.display = 'block';
+                
+                // Add click handlers
+                document.querySelectorAll('.autocomplete-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        searchInput.value = this.textContent;
+                        autocompleteResults.style.display = 'none';
+                    });
+                });
+            });
+    }, 300);
+});
+
+// Hide autocomplete when clicking outside
+document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !autocompleteResults.contains(e.target)) {
+        autocompleteResults.style.display = 'none';
+    }
+});
+</script>
+
+<style>
+.advanced-search-form {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 12px var(--shadow);
+    width: calc(100% - 40px);
+}
+
+.autocomplete-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.autocomplete-item:hover {
+    background: var(--bg-secondary);
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.popular-searches {
+    margin-bottom: 30px;
+}
+
+.popular-searches h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.tag:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.result-count {
+    color: var(--text-secondary);
+}
+
+.skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.skill-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--shadow);
+    transition: transform 0.2s;
+}
+
+.skill-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px var(--shadow);
+}
+
+.skill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 10px;
+}
+
+.skill-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.skill-category {
+    background: var(--bg-secondary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.skill-description {
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.skill-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.skill-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.badge-verified {
+    background: rgba(72, 187, 120, 0.2);
+    color: rgb(72, 187, 120);
+}
+
+.badge-level {
+    background: rgba(102, 126, 234, 0.2);
+    color: rgb(102, 126, 234);
+}
+
+.badge-endorsed {
+    background: rgba(237, 137, 54, 0.2);
+    color: rgb(237, 137, 54);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state p:first-child {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .filter-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .skill-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+</body>
+</html>

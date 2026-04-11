@@ -18,6 +18,7 @@ public class SessionRequestDto {
 
     @Min(value = 30, message = "Minimum session duration is 30 minutes")
     @Max(value = 480, message = "Maximum session duration is 8 hours")
+    @Builder.Default
     private int durationMinutes = 60;
 
     @Size(max = 500)

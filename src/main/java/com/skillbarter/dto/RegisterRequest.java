@@ -29,6 +29,8 @@ public class RegisterRequest {
     @Size(max = 500)
     private String bio;
 
+    private String referralCode; // Optional referral code
+
     public boolean passwordsMatch() {
         return password != null && password.equals(confirmPassword);
     }

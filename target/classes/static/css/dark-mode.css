@@ -1,0 +1,156 @@
+/**
+ * Dark Mode Theme for SkillBarter
+ * 
+ * Toggle with: document.body.setAttribute('data-theme', 'dark')
+ */
+
+:root {
+  /* Light mode (default) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  --border-color: #dee2e6;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: #ced4da;
+}
+
+[data-theme="dark"] {
+  /* Dark mode */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #3a3a3a;
+  --text-primary: #e9ecef;
+  --text-secondary: #adb5bd;
+  --text-muted: #6c757d;
+  --border-color: #495057;
+  --shadow: rgba(0, 0, 0, 0.5);
+  --card-bg: #2d2d2d;
+  --input-bg: #3a3a3a;
+  --input-border: #495057;
+}
+
+/* Apply theme variables */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card, .auth-card, .stat-card, .qa-card {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+input, textarea, select {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border-color: var(--input-border);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.navbar, .page-main {
+  background-color: var(--bg-primary);
+}
+
+.data-table {
+  background-color: var(--card-bg);
+}
+
+.data-table th {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.data-table td {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Dark mode toggle button */
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* Icons for theme toggle */
+.theme-toggle::before {
+  content: '🌙';
+}
+
+[data-theme="dark"] .theme-toggle::before {
+  content: '☀️';
+}
+
+/* Adjust specific components for dark mode */
+[data-theme="dark"] .alert-info {
+  background-color: #1e3a5f;
+  border-color: #2c5282;
+  color: #90cdf4;
+}
+
+[data-theme="dark"] .alert-success {
+  background-color: #1e4620;
+  border-color: #2f855a;
+  color: #9ae6b4;
+}
+
+[data-theme="dark"] .alert-error {
+  background-color: #5a1a1a;
+  border-color: #c53030;
+  color: #fc8181;
+}
+
+[data-theme="dark"] .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="dark"] .btn-ghost {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-ghost:hover {
+  background-color: var(--bg-secondary);
+}
+
+/* Code blocks in dark mode */
+[data-theme="dark"] code, [data-theme="dark"] pre {
+  background-color: var(--bg-tertiary);
+  color: #f8f8f2;
+}
+
+/* Links in dark mode */
+[data-theme="dark"] a {
+  color: #90cdf4;
+}
+
+[data-theme="dark"] a:hover {
+  color: #63b3ed;
+}

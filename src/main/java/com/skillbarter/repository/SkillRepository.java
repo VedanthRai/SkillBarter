@@ -39,4 +39,23 @@ public interface SkillRepository extends JpaRepository<Skill, Long> {
     /** Skills needing verification (certificate uploaded, not yet verified) */
     @Query("SELECT s FROM Skill s WHERE s.certificatePath IS NOT NULL AND s.verified = false")
     List<Skill> findPendingVerification();
+
+    /** Analytics: Top skills by demand (total sessions) */
+    @Query("SELECT s.name, COUNT(sess) as sessionCount " +
+           "FROM Skill s LEFT JOIN Session sess ON sess.skill = s " +
+           "GROUP BY s.id, s.name ORDER BY sessionCount DESC")
+    List<Object[]> getTopSkillsByDemand(int limit);
+
+    /** Analytics: Trending skills (sessions in last 7 days) */
+    @Query("SELECT s FROM Skill s LEFT JOIN Session sess ON sess.skill = s " +
+           "WHERE sess.createdAt >= :weekAgo " +
+           "GROUP BY s ORDER BY COUNT(sess) DESC")
+    List<Skill> findTrendingSkills(@Param("weekAgo") java.time.LocalDateTime weekAgo);
+
+    /** Analytics: Total endorsements for user */
+    @Query("SELECT SUM(s.endorsementCount) FROM Skill s WHERE s.user.id = :userId")
+    Long getTotalEndorsementsForUser(@Param("userId") Long userId);
+
+    /** Count skills by user and offering status */
+    long countByUserIdAndIsOffering(Long userId, Boolean isOffering);
 }

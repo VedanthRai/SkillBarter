@@ -68,9 +68,9 @@
 
         <!-- Quick actions -->
         <div class="quick-actions">
-            <a th:href="@{/skills/search}" class="qa-card">
+            <a th:href="@{/skills/advanced-search}" class="qa-card" style="border-color:rgba(102,126,234,0.4);">
                 <span class="qa-icon">🔍</span>
-                <span class="qa-label">Find a Teacher</span>
+                <span class="qa-label">Advanced Search</span>
             </a>
             <a th:href="@{/skills/my}" class="qa-card">
                 <span class="qa-icon">✏️</span>
@@ -92,6 +92,30 @@
                 <span class="qa-icon">❤️</span>
                 <span class="qa-label">Wishlist</span>
             </a>
+            <a th:href="@{/skill-swaps}" class="qa-card">
+                <span class="qa-icon">🔄</span>
+                <span class="qa-label">Skill Swaps</span>
+            </a>
+            <a th:href="@{/skill-requests}" class="qa-card">
+                <span class="qa-icon">📢</span>
+                <span class="qa-label">Request Board</span>
+            </a>
+            <a th:href="@{/learning-paths}" class="qa-card">
+                <span class="qa-icon">🗺️</span>
+                <span class="qa-label">Learning Paths</span>
+            </a>
+            <a th:href="@{/gifts/send}" class="qa-card">
+                <span class="qa-icon">🎁</span>
+                <span class="qa-label">Send Gift</span>
+            </a>
+            <a th:href="@{/referrals}" class="qa-card">
+                <span class="qa-icon">👥</span>
+                <span class="qa-label">Referrals</span>
+            </a>
+            <a th:href="@{/availability}" class="qa-card">
+                <span class="qa-icon">📆</span>
+                <span class="qa-label">My Availability</span>
+            </a>
             <a th:href="@{/ai/chat}" class="qa-card" style="border-color:rgba(99,102,241,0.4);">
                 <span class="qa-icon">🤖</span>
                 <span class="qa-label">Ask SkillBot</span>
@@ -99,6 +123,22 @@
             <a th:href="@{/leaderboard}" class="qa-card">
                 <span class="qa-icon">🏆</span>
                 <span class="qa-label">Leaderboard</span>
+            </a>
+            <a th:href="@{/profile/completeness}" class="qa-card" style="border-color:rgba(237,137,54,0.4);">
+                <span class="qa-icon">📊</span>
+                <span class="qa-label">Profile Score</span>
+            </a>
+            <a th:href="@{/recommendations}" class="qa-card" style="border-color:rgba(102,126,234,0.4);">
+                <span class="qa-icon">💡</span>
+                <span class="qa-label">Recommendations</span>
+            </a>
+            <a th:href="@{/activity}" class="qa-card" style="border-color:rgba(118,75,162,0.4);">
+                <span class="qa-icon">📰</span>
+                <span class="qa-label">Activity Feed</span>
+            </a>
+            <a th:href="@{/notifications/center}" class="qa-card" style="border-color:rgba(237,100,166,0.4);">
+                <span class="qa-icon">🔔</span>
+                <span class="qa-label">Notifications</span>
             </a>
         </div>
 

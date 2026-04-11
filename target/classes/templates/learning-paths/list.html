@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>My Learning Paths — SkillBarter</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<main class="page-main">
+    <div class="container">
+        <div th:replace="~{layout :: flashes}"></div>
+        <h1>My Learning Paths</h1>
+        <a th:href="@{/learning-paths/create}" class="btn btn-primary">Create New Path</a>
+        <div class="card-grid">
+            <div th:each="path : ${paths}" class="card">
+                <h3 th:text="${path.title}">Path Title</h3>
+                <p th:text="${path.description}">Description</p>
+                <a th:href="@{/learning-paths/{id}(id=${path.id})}" class="btn">View Progress</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

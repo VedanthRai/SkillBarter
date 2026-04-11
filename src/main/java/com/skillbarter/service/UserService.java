@@ -48,6 +48,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher eventPublisher;
     private final WalletService walletService;
+    private ReferralService referralService;
 
     @Autowired
     public UserService(UserRepository userRepository,
@@ -55,13 +56,15 @@ public class UserService {
                        ReviewRepository reviewRepository,
                        PasswordEncoder passwordEncoder,
                        ApplicationEventPublisher eventPublisher,
-                       @Lazy WalletService walletService) {
+                       @Lazy WalletService walletService,
+                       @Lazy ReferralService referralService) {
         this.userRepository = userRepository;
         this.badgeRepository = badgeRepository;
         this.reviewRepository = reviewRepository;
         this.passwordEncoder = passwordEncoder;
         this.eventPublisher = eventPublisher;
         this.walletService = walletService;
+        this.referralService = referralService;
     }
 
     @Value("${app.signup.bonus.credits:5}")
@@ -98,6 +101,12 @@ public class UserService {
 
         user = userRepository.save(user);
         walletService.recordSignupBonus(user, getSignupBonus());
+        
+        // Process referral code if provided
+        if (request.getReferralCode() != null && !request.getReferralCode().isEmpty()) {
+            referralService.processReferral(request.getReferralCode(), user.getId());
+        }
+        
         log.info("New user registered: {} (id={})", user.getUsername(), user.getId());
         return user;
     }
@@ -221,5 +230,9 @@ public class UserService {
         Path target = Paths.get(uploadDir, filename);
         file.transferTo(target.toFile());
         return filename;
+    }
+
+    public User getUserById(Long userId) {
+        return findById(userId);
     }
 }

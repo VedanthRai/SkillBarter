@@ -6,6 +6,7 @@ package com.skillbarter.enums;
 public enum SessionStatus {
     REQUESTED,   // Learner sent request
     ACCEPTED,    // Teacher confirmed
+    REJECTED,    // Teacher declined request
     IN_PROGRESS, // Session underway (timer started)
     COMPLETED,   // Both parties confirmed end
     CANCELLED,   // Either party cancelled before start

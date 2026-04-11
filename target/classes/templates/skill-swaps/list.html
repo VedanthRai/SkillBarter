@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Skill Swaps — SkillBarter</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<main class="page-main">
+    <div class="container">
+        <h1>Skill Swap Proposals</h1>
+        <a th:href="@{/skill-swaps/propose}" class="btn btn-primary">Propose New Swap</a>
+        <div th:each="swap : ${swaps}" class="card">
+            <p><strong>Proposer:</strong> <span th:text="${swap.proposer.username}"></span> teaches <span th:text="${swap.mySkill.name}"></span></p>
+            <p><strong>You teach:</strong> <span th:text="${swap.desiredSkill.name}"></span></p>
+            <p><strong>Status:</strong> <span th:text="${swap.status}"></span></p>
+            <form th:if="${swap.status.name() == 'PENDING'}" th:action="@{/skill-swaps/{id}/accept(id=${swap.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-success">Accept</button>
+            </form>
+            <form th:if="${swap.status.name() == 'PENDING'}" th:action="@{/skill-swaps/{id}/reject(id=${swap.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Reject</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

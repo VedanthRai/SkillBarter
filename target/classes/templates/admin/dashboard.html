@@ -50,7 +50,28 @@
             <span class="anc-title">Dispute Tribunal</span>
             <span class="anc-desc">Assign verifiers, view cases</span>
         </a>
+        <a th:href="@{/admin/analytics}" class="admin-nav-card" style="border-color:rgba(102,126,234,0.4);">
+            <span class="anc-icon">📊</span>
+            <span class="anc-title">Analytics Dashboard</span>
+            <span class="anc-desc">View charts, statistics, and trends</span>
+        </a>
+        <a th:href="@{/admin/stats}" class="admin-nav-card" style="border-color:rgba(72,187,120,0.4);">
+            <span class="anc-icon">⚡</span>
+            <span class="anc-title">Real-Time Stats</span>
+            <span class="anc-desc">Live platform statistics and health</span>
+        </a>
     </div>
+
+    <!-- Export Reports Section -->
+    <section class="dash-section">
+        <h2 class="section-title">📊 Export Reports</h2>
+        <div class="export-buttons">
+            <a th:href="@{/admin/reports/users/pdf}" class="btn btn-primary">Export Users (PDF)</a>
+            <a th:href="@{/admin/reports/users/csv}" class="btn btn-primary">Export Users (CSV)</a>
+            <a th:href="@{/admin/reports/sessions/pdf}" class="btn btn-primary">Export Sessions (PDF)</a>
+            <a th:href="@{/admin/reports/sessions/csv}" class="btn btn-primary">Export Sessions (CSV)</a>
+        </div>
+    </section>
 
     <!-- Recent Users -->
     <section class="dash-section">

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Add Session Notes — SkillBarter</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+<div th:replace="~{layout :: navbar}"></div>
+<main class="page-main">
+    <div class="container">
+        <h1>Add Session Notes</h1>
+        <form th:action="@{/sessions/{id}/notes/add(id=${sessionId})}" th:object="${notesDto}" method="post">
+            <div class="form-group">
+                <label>Key Takeaways *</label>
+                <textarea th:field="*{keyTakeaways}" class="form-control" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Homework</label>
+                <textarea th:field="*{homework}" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Resources Shared</label>
+                <textarea th:field="*{resourcesShared}" class="form-control"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Notes</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

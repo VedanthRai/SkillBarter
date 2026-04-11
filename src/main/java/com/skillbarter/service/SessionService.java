@@ -41,6 +41,7 @@ public class SessionService {
     private final TransactionService transactionService;
     private final UserService userService;
     private final PdfReceiptService pdfReceiptService;
+    private final MeetingLinkService meetingLinkService;
     private final ApplicationEventPublisher eventPublisher;
 
     // ── Book Session (Learner action) ────────────────────────────────────
@@ -99,6 +100,14 @@ public class SessionService {
         assertStatus(session, SessionStatus.REQUESTED);
 
         session.setStatus(SessionStatus.ACCEPTED);
+        
+        // Auto-generate meeting link if not already set
+        if (session.getMeetingLink() == null || session.getMeetingLink().isEmpty()) {
+            String autoLink = meetingLinkService.generateMeetingLink(session);
+            session.setMeetingLink(autoLink);
+            log.info("Auto-generated meeting link for session {}: {}", sessionId, autoLink);
+        }
+        
         session = sessionRepository.save(session);
 
         eventPublisher.publishEvent(new DomainEvents.SessionAcceptedEvent(this, session));

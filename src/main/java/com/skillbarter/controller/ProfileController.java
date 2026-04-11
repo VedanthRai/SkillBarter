@@ -24,18 +24,24 @@ public class ProfileController {
     private final ReviewService reviewService;
     private final SkillService skillService;
     private final TransactionService transactionService;
+    private final ResponseTimeService responseTimeService;
+    private final ProfileCompletenessService profileCompletenessService;
 
     @Autowired
     public ProfileController(UserService userService,
                              SecurityUtils securityUtils,
                              ReviewService reviewService,
                              SkillService skillService,
-                             TransactionService transactionService) {
+                             TransactionService transactionService,
+                             ResponseTimeService responseTimeService,
+                             ProfileCompletenessService profileCompletenessService) {
         this.userService = userService;
         this.securityUtils = securityUtils;
         this.reviewService = reviewService;
         this.skillService = skillService;
         this.transactionService = transactionService;
+        this.responseTimeService = responseTimeService;
+        this.profileCompletenessService = profileCompletenessService;
     }
 
     @GetMapping
@@ -47,9 +53,25 @@ public class ProfileController {
 
     @GetMapping("/{userId}")
     public String viewProfile(@PathVariable Long userId, Model model) {
+        User user = userService.getUserById(userId);
         model.addAttribute("profile", userService.buildProfileDecorator(userId));
         model.addAttribute("skills",  skillService.getSkillsForUser(userId));
         model.addAttribute("reviews", reviewService.getReviewsForUser(userId));
+
+        // Response time metrics
+        Double avgResponseTime = responseTimeService.calculateAverageResponseTime(userId);
+        model.addAttribute("avgResponseTime", avgResponseTime);
+        model.addAttribute("responseTimeCategory", responseTimeService.getResponseTimeCategory(avgResponseTime));
+        model.addAttribute("responseTimeBadge", responseTimeService.getResponseTimeBadge(avgResponseTime));
+        
+        // Performance metrics
+        model.addAttribute("acceptanceRate", responseTimeService.calculateAcceptanceRate(userId));
+        model.addAttribute("completionRate", responseTimeService.calculateCompletionRate(userId));
+        
+        // Profile completeness
+        int completeness = profileCompletenessService.calculateCompleteness(user);
+        model.addAttribute("profileCompleteness", completeness);
+        model.addAttribute("completenessLevel", profileCompletenessService.getCompletionLevel(completeness));
 
         Long currentId = securityUtils.getCurrentUserId();
         boolean isOwner = currentId != null && currentId.equals(userId);

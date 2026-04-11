@@ -21,9 +21,9 @@ public class AffordabilityMatchingStrategy implements MatchingStrategy {
     public List<Skill> match(User learner, String wantedSkill, List<Skill> allOffered) {
         String keyword = wantedSkill.toLowerCase().trim();
         return allOffered.stream()
-                .filter(s -> !s.getUser().getId().equals(learner.getId()))
                 .filter(s -> s.getUser().isActive())
-                .filter(s -> s.getName().toLowerCase().contains(keyword))
+                .filter(s -> s.getName().toLowerCase().contains(keyword) || 
+                           s.getDescription().toLowerCase().contains(keyword))
                 // learner must be able to afford at least 1 hour
                 .filter(s -> learner.getCreditBalance().compareTo(s.getHourlyRate()) >= 0)
                 .sorted(Comparator.comparing(Skill::getHourlyRate)
