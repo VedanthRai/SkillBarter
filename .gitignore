@@ -1,0 +1,26 @@
+# Maven build output
+target/
+*.jar
+*.war
+*.class
+
+# Logs
+logs/
+*.log
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploads (user-generated content)
+uploads/
+receipts/
+
+# Environment-specific config (do not commit passwords)
+# application-prod.properties
