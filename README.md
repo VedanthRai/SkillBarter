@@ -386,17 +386,6 @@ All diagrams are in `docs/diagrams.puml`. Render with:
 
 ---
 
-## Team Roles (UE23CS352B)
-
-| Member | Role | Features |
-|--------|------|---------|
-| Member 1 | Auth & Profile | Registration, login, profile, leaderboard (Decorator Pattern) |
-| Member 2 | Skill Management | Skill CRUD, smart matching, wishlist (Strategy Pattern) |
-| Member 3 | Session & Escrow | Session booking, credit transactions, PDF receipts (Builder Pattern) |
-| Member 4 | Disputes & Admin | Dispute resolution, admin dashboard, notifications (Observer Pattern) |
-
----
-
 ## Build Status
 
 ```
