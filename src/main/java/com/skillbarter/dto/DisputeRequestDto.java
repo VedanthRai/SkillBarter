@@ -2,7 +2,7 @@ package com.skillbarter.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
-
+// Transfers data for raising disputes
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class DisputeRequestDto {
 

@@ -1,5 +1,5 @@
 package com.skillbarter.controller;
-
+//Provides admin operations like user management and system control
 import com.skillbarter.enums.Role;
 import com.skillbarter.service.*;
 import com.skillbarter.entity.User;

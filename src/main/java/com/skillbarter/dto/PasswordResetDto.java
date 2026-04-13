@@ -3,7 +3,7 @@ package com.skillbarter.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-
+// Transfers data for password reset requests
 @Data
 public class PasswordResetDto {
     @NotBlank(message = "Email is required")

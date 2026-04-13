@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
+// Handles database operations for reviews
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 

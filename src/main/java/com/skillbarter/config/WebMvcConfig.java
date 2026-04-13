@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.format.DateTimeFormatter;
-
+// Configures MVC settings like view resolvers and interceptors
 /**
  * Web MVC Configuration.
  *

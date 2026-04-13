@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/referrals")
 @RequiredArgsConstructor
 public class ReferralController {
-
+// Manages referral system (invite users and track rewards)
     private final ReferralService referralService;
     private final SecurityUtils securityUtils;
 

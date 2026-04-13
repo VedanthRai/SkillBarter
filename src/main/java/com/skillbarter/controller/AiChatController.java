@@ -10,7 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
+// Handles AI chatbot interactions and responses
 /**
  * AI Chat Controller — Gemini-powered SkillBot assistant.
  *

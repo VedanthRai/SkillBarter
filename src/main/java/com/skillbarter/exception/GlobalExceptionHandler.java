@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
+// Handles global exceptions across the application
 /**
  * Global exception handler — maps domain exceptions to user-friendly error pages.
  * SOLID – SRP: centralises error handling away from controllers.

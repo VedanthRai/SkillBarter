@@ -2,7 +2,7 @@ package com.skillbarter.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
-
+// Transfers data for user reviews
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class ReviewDto {
 
