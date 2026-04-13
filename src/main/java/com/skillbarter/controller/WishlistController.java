@@ -9,9 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * Wishlist Controller — Minor Feature 1: Wishlist + Favorites.
- */
 @Controller
 @RequestMapping("/wishlist")
 @RequiredArgsConstructor
