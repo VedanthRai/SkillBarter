@@ -1,5 +1,4 @@
 package com.skillbarter.entity;
-
 import com.skillbarter.enums.Role;
 import com.skillbarter.enums.UserStatus;
 import jakarta.persistence.*;
