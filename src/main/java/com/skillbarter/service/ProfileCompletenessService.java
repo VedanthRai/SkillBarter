@@ -8,12 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Profile Completeness Service - Calculate profile completion percentage
- * 
- * SOLID - SRP: Only handles profile completeness calculation
- * SOLID - OCP: Easy to add new completion criteria
- */
 @Service
 @RequiredArgsConstructor
 public class ProfileCompletenessService {
