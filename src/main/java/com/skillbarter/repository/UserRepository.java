@@ -1,5 +1,4 @@
 package com.skillbarter.repository;
-
 import com.skillbarter.entity.User;
 import com.skillbarter.enums.Role;
 import com.skillbarter.enums.UserStatus;
