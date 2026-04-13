@@ -6,18 +6,7 @@ import com.skillbarter.entity.User;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Decorator Pattern (Structural) — User Profile enrichment.
- *
- * The UserProfileDecorator wraps a User and adds computed
- * display properties (badge labels, trust score label, etc.)
- * without modifying the User entity class.
- *
- * SOLID – OCP: behaviour added through decoration, not modification.
- * SOLID – SRP: display logic kept out of the User entity.
- *
- * Design Pattern: Decorator Pattern.
- */
+
 public class UserProfileDecorator {
 
     private final User user;
