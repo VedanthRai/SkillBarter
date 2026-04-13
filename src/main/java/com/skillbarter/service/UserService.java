@@ -31,12 +31,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * User Service — Major Feature 1: Authentication & Profile Management.
- *
- * SOLID – SRP: handles only user lifecycle operations.
- * Uses Observer (ApplicationEventPublisher) to fire badge events.
- */
+
 @Service
 public class UserService {
 
