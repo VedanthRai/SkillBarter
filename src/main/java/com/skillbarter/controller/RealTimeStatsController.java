@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 import java.util.Map;
-
+// Provides real-time system statistics and updates
 @Controller
 @RequestMapping("/admin/stats")
 @PreAuthorize("hasRole('ADMIN')")

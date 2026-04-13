@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-
+// Manages referral logic and reward distribution
 @Service
 @RequiredArgsConstructor
 @Slf4j

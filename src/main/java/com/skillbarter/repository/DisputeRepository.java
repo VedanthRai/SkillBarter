@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
+// Handles database operations for disputes
 @Repository
 public interface DisputeRepository extends JpaRepository<Dispute, Long> {
 

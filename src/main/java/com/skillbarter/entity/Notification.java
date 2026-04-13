@@ -6,7 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-
+// Represents notification data for users
 /**
  * In-app notification (Minor Feature 2).
  *

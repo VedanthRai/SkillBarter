@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-
+// Represents referral codes and tracking
 /**
  * Referral system — user invites friends.
  */

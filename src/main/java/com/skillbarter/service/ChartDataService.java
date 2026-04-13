@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
  * SOLID - SRP: Only handles chart data preparation
  * SOLID - OCP: Easy to add new chart types
  */
+// Prepares chart data for analytics dashboards
 @Service
 @RequiredArgsConstructor
 public class ChartDataService {

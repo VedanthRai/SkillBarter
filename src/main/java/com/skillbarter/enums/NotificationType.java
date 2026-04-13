@@ -1,5 +1,5 @@
 package com.skillbarter.enums;
-
+// Defines types of notifications
 /**
  * Types of in-app notifications (Minor Feature 2).
  */

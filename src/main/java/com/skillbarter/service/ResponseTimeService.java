@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-
+// Tracks and calculates response time metrics
 /**
  * Response Time Service - Track how quickly teachers respond to booking requests
  * 

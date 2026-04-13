@@ -1,5 +1,5 @@
 package com.skillbarter.enums;
-
+// Defines dispute lifecycle states
 /**
  * Dispute lifecycle states (State Diagram 4).
  */

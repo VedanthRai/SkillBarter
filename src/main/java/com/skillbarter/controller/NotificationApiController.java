@@ -8,7 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
+// REST API for fetching notification counts (used by frontend badge)
 /**
  * REST API controller for notification badge polling (used by app.js).
  * Returns unread count as JSON — consumed by the navbar badge refresher.

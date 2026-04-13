@@ -1,5 +1,5 @@
 package com.skillbarter.enums;
-
+// Defines dispute resolution outcomes
 /**
  * Dispute resolution outcomes (Major Feature 4 enhancement).
  */

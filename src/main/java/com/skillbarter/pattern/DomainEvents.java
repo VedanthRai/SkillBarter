@@ -3,7 +3,7 @@ package com.skillbarter.pattern;
 import com.skillbarter.entity.Session;
 import com.skillbarter.entity.User;
 import org.springframework.context.ApplicationEvent;
-
+// Defines domain events for Observer pattern-based communication
 /**
  * Observer Pattern (Behavioral) — Domain Event classes.
  *

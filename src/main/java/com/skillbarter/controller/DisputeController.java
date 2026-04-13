@@ -1,5 +1,5 @@
 package com.skillbarter.controller;
-
+//Handles dispute lifecycle: raise, assign, and resolve disputes
 import com.skillbarter.dto.DisputeRequestDto;
 import com.skillbarter.entity.Dispute;
 import com.skillbarter.security.SecurityUtils;

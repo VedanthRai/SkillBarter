@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class AdminAnalyticsController {
-
+// Displays admin-level analytics and system metrics
     private final ChartDataService chartDataService;
 
     @GetMapping

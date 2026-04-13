@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("isAuthenticated()")
 @RequiredArgsConstructor
 public class ActivityFeedController {
-
+// Displays user activity feed and recent actions
     private final ActivityFeedService activityFeedService;
     private final SecurityUtils securityUtils;
 

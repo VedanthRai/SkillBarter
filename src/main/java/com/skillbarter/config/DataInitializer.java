@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
+// Initializes default data at application startup
 @Component
 @RequiredArgsConstructor
 @Slf4j

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+// Handles database operations for notifications
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 

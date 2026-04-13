@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+// Handles AI-based responses using Gemini API
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
