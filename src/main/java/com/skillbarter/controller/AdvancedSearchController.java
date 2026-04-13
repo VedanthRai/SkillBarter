@@ -1,3 +1,5 @@
+// Vijay: Implements advanced filtering (category, rating, etc.)
+// Enhances user experience by refining search results
 package com.skillbarter.controller;
 
 import com.skillbarter.dto.AdvancedSearchDto;

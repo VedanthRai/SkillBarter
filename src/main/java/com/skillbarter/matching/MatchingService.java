@@ -1,3 +1,6 @@
+// Vijay: Context class for Strategy Pattern
+// Selects appropriate matching strategy (rating, affordability, verified)
+// Implements Open/Closed Principle by allowing new strategies without modifying this class
 package com.skillbarter.matching;
 
 import com.skillbarter.entity.Skill;

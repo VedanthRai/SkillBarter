@@ -1,3 +1,6 @@
+// Vijay: Strategy Pattern interface for dynamic skill matching algorithms
+// Allows switching between different matching logics without modifying existing code
+
 package com.skillbarter.matching;
 
 import com.skillbarter.entity.Skill;

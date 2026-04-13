@@ -1,3 +1,5 @@
+// Vijay: Handles creation and viewing of skill requests
+// Entry point for users to request new skills
 package com.skillbarter.controller;
 
 import com.skillbarter.dto.SkillRequestDto;

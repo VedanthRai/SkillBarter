@@ -1,3 +1,5 @@
+// Vijay: Handles skill endorsements between users
+// Improves credibility and influences matching results
 package com.skillbarter.controller;
 
 import com.skillbarter.security.SecurityUtils;
