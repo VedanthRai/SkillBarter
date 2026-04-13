@@ -1,5 +1,4 @@
 package com.skillbarter.dto;
-
 import com.skillbarter.enums.SkillCategory;
 import jakarta.validation.constraints.*;
 import lombok.*;
