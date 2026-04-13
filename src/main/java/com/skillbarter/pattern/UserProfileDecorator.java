@@ -1,5 +1,4 @@
 package com.skillbarter.pattern;
-
 import com.skillbarter.entity.Badge;
 import com.skillbarter.entity.User;
 
