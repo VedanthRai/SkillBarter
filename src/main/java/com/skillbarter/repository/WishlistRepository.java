@@ -1,5 +1,4 @@
 package com.skillbarter.repository;
-
 import com.skillbarter.entity.WishlistItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
