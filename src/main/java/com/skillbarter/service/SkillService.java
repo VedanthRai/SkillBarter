@@ -22,10 +22,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Skill Service — Minor Feature 1 (Search), Major Feature 1 (Verification).
- * SOLID – SRP: skill CRUD and certificate management only.
- */
+
 @Service
 public class SkillService {
 
