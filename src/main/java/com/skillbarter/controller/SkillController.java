@@ -1,5 +1,4 @@
 package com.skillbarter.controller;
-
 import com.skillbarter.dto.SkillDto;
 import com.skillbarter.enums.SkillCategory;
 import com.skillbarter.matching.MatchingService;
