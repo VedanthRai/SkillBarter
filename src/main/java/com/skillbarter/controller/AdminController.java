@@ -15,9 +15,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Admin Controller — Minor Feature 3: Admin Dashboard & User Bans.
- */
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
