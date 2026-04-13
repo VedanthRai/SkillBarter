@@ -19,10 +19,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
-/**
- * Skill Controller — Major Feature 1 (profiles), Minor Feature 1 (search).
- * MVC: handles HTTP, delegates to SkillService & MatchingService.
- */
 @Controller
 @RequestMapping("/skills")
 @RequiredArgsConstructor
