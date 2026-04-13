@@ -12,18 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
-/**
- * Core User entity.
- *
- * SOLID – SRP: manages only identity and credit balance.
- * SOLID – OCP: extended by badge/gamification relationships,
- *              not by modifying this class.
- *
- * Participates in:
- *  - User Account State Machine (UserStatus)
- *  - Strategy Pattern (matching engine reads skills offered/wanted)
- *  - Observer Pattern (source of Notification events)
- */
+
 @Entity
 @Table(name = "users",
        uniqueConstraints = {
