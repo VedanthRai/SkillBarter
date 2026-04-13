@@ -1,5 +1,4 @@
 package com.skillbarter.dto;
-
 import jakarta.validation.constraints.*;
 import lombok.*;
 
