@@ -13,13 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Wishlist Service — Minor Feature 1: Wishlist + Favorites.
- *
- * SOLID – SRP: manages only wishlist/favorites lifecycle.
- * Observer Pattern: when a teacher adds a new skill, wishlist subscribers
- * can be notified (via NotificationService).
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
