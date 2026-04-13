@@ -1,5 +1,4 @@
 package com.skillbarter.controller;
-
 import com.skillbarter.entity.User;
 import com.skillbarter.enums.SessionStatus;
 import com.skillbarter.pattern.UserProfileDecorator;
