@@ -1,5 +1,4 @@
 package com.skillbarter.security;
-
 import com.skillbarter.entity.User;
 import com.skillbarter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
