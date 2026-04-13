@@ -17,7 +17,6 @@ public class AdminAnalyticsController {
 
     @GetMapping
     public String adminAnalytics(@RequestParam(defaultValue = "30") int days, Model model) {
-        // User growth chart
         model.addAttribute("userGrowthData", chartDataService.getUserGrowthData(days));
         
         // Sessions by category
