@@ -3,10 +3,7 @@ package com.skillbarter.dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-/**
- * DTO for user registration form.
- * SOLID – SRP: carries only registration input; validation annotations enforce constraints.
- */
+
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class RegisterRequest {
 
