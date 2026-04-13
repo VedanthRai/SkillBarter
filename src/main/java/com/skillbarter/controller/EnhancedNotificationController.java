@@ -75,7 +75,6 @@ public class EnhancedNotificationController {
         long count = notificationService.getUnreadCount(userId);
         return Map.of("count", count);
     }
-
     @GetMapping("/api/filter")
     @ResponseBody
     public List<Notification> filterNotifications(@RequestParam String type) {
