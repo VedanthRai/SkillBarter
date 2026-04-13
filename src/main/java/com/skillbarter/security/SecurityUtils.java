@@ -7,9 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-/**
- * Helper to resolve the currently authenticated User entity from the Security context.
- */
+
 @Component
 @RequiredArgsConstructor
 public class SecurityUtils {
