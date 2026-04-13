@@ -13,16 +13,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * Dispute Controller — Major Feature 4: Dispute Tribunal.
- * Handles raise → assign → resolve lifecycle.
- */
+
 @Controller
 @RequestMapping("/disputes")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
 public class DisputeController {
-
     private final DisputeService disputeService;
     private final SecurityUtils securityUtils;
 
