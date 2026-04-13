@@ -1,5 +1,4 @@
 package com.skillbarter.service;
-
 import com.skillbarter.dto.RegisterRequest;
 import com.skillbarter.entity.Badge;
 import com.skillbarter.entity.User;
