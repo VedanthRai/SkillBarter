@@ -1,5 +1,4 @@
 package com.skillbarter.service;
-
 import com.skillbarter.dto.SkillDto;
 import com.skillbarter.entity.Skill;
 import com.skillbarter.entity.User;
