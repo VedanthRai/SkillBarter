@@ -1,6 +1,4 @@
 package com.skillbarter.enums;
-
-
 public enum UserStatus {
     PENDING_VERIFICATION,   // Registered, email not confirmed
     ACTIVE,                 // Normal operating state
