@@ -14,9 +14,7 @@ public class ProfileCompletenessService {
 
     private final SkillRepository skillRepository;
 
-    /**
-     * Calculate profile completeness percentage (0-100)
-     */
+
     public int calculateCompleteness(User user) {
         int score = 0;
         int maxScore = 100;
