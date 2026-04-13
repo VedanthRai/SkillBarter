@@ -28,7 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByStatus(UserStatus status);
 
-    /** Leaderboard: top N users by reputation score */
     @Query("SELECT u FROM User u WHERE u.status = 'ACTIVE' ORDER BY u.reputationScore DESC")
     List<User> findTopByReputationScore();
 
