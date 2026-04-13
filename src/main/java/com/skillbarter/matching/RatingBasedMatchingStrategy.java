@@ -1,3 +1,5 @@
+// Vijay: Matches users based on highest ratings
+// Improves quality of recommendations by prioritizing experienced users
 package com.skillbarter.matching;
 
 import com.skillbarter.entity.Skill;

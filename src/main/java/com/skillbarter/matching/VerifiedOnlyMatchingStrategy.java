@@ -1,3 +1,5 @@
+// Vijay: Filters only verified users
+// Ensures trust and authenticity in skill exchange
 package com.skillbarter.matching;
 
 import com.skillbarter.entity.Skill;

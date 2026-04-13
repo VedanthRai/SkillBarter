@@ -1,3 +1,5 @@
+// Vijay: Matches users based on lowest cost (time credits)
+// Helps users find affordable learning options
 package com.skillbarter.matching;
 
 import com.skillbarter.entity.Skill;

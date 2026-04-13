@@ -1,3 +1,5 @@
+// Vijay: Provides recommended matches using MatchingService
+// Integrates Strategy Pattern to generate personalized suggestions
 package com.skillbarter.controller;
 
 import com.skillbarter.security.SecurityUtils;
