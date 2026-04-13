@@ -10,10 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Bridges Spring Security's UserDetailsService with our User entity.
- * SOLID – DIP: SecurityConfig depends on this abstraction (UserDetailsService).
- */
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
