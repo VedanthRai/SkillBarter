@@ -25,7 +25,6 @@ public class SkillDto {
     private BigDecimal hourlyRate;
 
     private String proficiencyLevel;
-
     @NotNull
     private Boolean isOffering;
 }
