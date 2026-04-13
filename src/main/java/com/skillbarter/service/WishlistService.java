@@ -1,5 +1,4 @@
 package com.skillbarter.service;
-
 import com.skillbarter.entity.Skill;
 import com.skillbarter.entity.User;
 import com.skillbarter.entity.WishlistItem;
