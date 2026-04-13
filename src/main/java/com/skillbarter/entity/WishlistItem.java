@@ -1,5 +1,4 @@
 package com.skillbarter.entity;
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
