@@ -1,5 +1,4 @@
 package com.skillbarter.controller;
-
 import com.skillbarter.dto.RegisterRequest;
 import com.skillbarter.service.UserService;
 import jakarta.validation.Valid;
