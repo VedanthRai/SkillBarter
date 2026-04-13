@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- * Profile Controller — Major Feature 1.
- * Displays user profiles with the Decorator pattern.
- */
+
 @Controller
 @RequestMapping("/profile")
 public class ProfileController {
