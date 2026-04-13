@@ -6,15 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-/**
- * Skill Verification Badge awarded to a user for a verified skill.
- *
- * Design Pattern: Decorator Pattern conceptually.
- * A Badge decorates a User's profile with additional credibility,
- * without modifying the User class itself.
- *
- * Used in Gamification (streak badges) and Verification (skill badges).
- */
+
 @Entity
 @Table(name = "badges")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
