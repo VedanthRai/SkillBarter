@@ -49,7 +49,6 @@ public class ProfileCompletenessController {
         response.put("level", profileCompletenessService.getCompletionLevel(
             profileCompletenessService.calculateCompleteness(user)));
         response.put("missingItems", profileCompletenessService.getMissingItems(user));
-
         return response;
     }
 }
