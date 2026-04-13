@@ -6,14 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-/**
- * Wishlist / Favorites — Minor Feature 1.
- *
- * A user can save a skill to their wishlist to be notified when
- * the teacher opens new slots or the skill becomes available.
- *
- * SOLID – SRP: models only the wishlist relationship.
- */
+
 @Entity
 @Table(name = "wishlist_items",
        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "skill_id"}))
