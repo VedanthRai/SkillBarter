@@ -12,9 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-/**
- * Dashboard Controller — user home page with at-a-glance stats.
- */
+
 @Controller
 @RequiredArgsConstructor
 @Slf4j
